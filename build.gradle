@@ -7,6 +7,7 @@ buildscript {
     dependencies {
         classpath 'de.richsource.gradle.plugins:gwt-gradle-plugin:0.6'
         classpath 'com.android.tools.build:gradle:1.2.3'
+        classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:+'
     }
 }
 
@@ -35,7 +36,7 @@ allprojects {
 
 project(":desktop") {
     apply plugin: "java"
-
+    apply plugin: "kotlin"
 
     dependencies {
         compile project(":core")
@@ -47,6 +48,7 @@ project(":desktop") {
 
 project(":android") {
     apply plugin: "android"
+    apply plugin: "kotlin-android"
 
     configurations { natives }
 
@@ -67,6 +69,7 @@ project(":android") {
 
 project(":core") {
     apply plugin: "java"
+    apply plugin: "kotlin"
 
     dependencies {
         compile "com.badlogicgames.gdx:gdx:$gdxVersion"
@@ -78,6 +81,7 @@ project(":core") {
         compile "net.onedaybeard.artemis:artemis-odb:$artemisOdbVersion"
         compile "net.onedaybeard.artemis:artemis-odb-serializer-json:$artemisOdbVersion"
         compile "net.mostlyoriginal.artemis-odb:contrib-core:$artemisOdbContribVersion"
+        compile 'org.jetbrains.kotlin:kotlin-stdlib:+'
     }
 }
 
