@@ -1,28 +1,34 @@
 package io.piotrjastrzebski.lis
 
-import com.badlogic.gdx.ApplicationAdapter
-import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.graphics.GL20
-import com.badlogic.gdx.graphics.Texture
+import com.badlogic.gdx.Game
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer
+import io.piotrjastrzebski.lis.screens.LoadingScreen
+import io.piotrjastrzebski.lis.utils.Assets
 
 /**
  * Created by EvilEntity on 20/12/2015.
  */
-class LiSGame : ApplicationAdapter() {
+public const val SCALE = 32f;
+public const val INV_SCALE = 1f/SCALE;
+public const val VP_WIDTH = 1280 * INV_SCALE;
+public const val VP_HEIGHT = 720 * INV_SCALE;
+
+class LiSGame(val bridge: PlatformBridge) : Game() {
+    internal lateinit var assets: Assets
     internal lateinit var batch: SpriteBatch
-    internal lateinit var img: Texture
+    internal lateinit var renderer: ShapeRenderer
 
     override fun create() {
+        assets = Assets(bridge.getPixelScaleFactor())
         batch = SpriteBatch()
-        img = Texture("badlogic.jpg")
+        renderer = ShapeRenderer()
+        setScreen(LoadingScreen(this))
     }
 
-    override fun render() {
-        Gdx.gl.glClearColor(1f, 1f, 0f, 1f)
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
-        batch.begin()
-        batch.draw(img, 0f, 0f)
-        batch.end()
+    override fun dispose() {
+        super.dispose()
+        batch.dispose()
+        assets.dispose()
     }
 }

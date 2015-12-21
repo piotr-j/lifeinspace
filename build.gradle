@@ -82,6 +82,7 @@ project(":core") {
         compile "net.onedaybeard.artemis:artemis-odb-serializer-json:$artemisOdbVersion"
         compile "net.mostlyoriginal.artemis-odb:contrib-core:$artemisOdbContribVersion"
         compile 'org.jetbrains.kotlin:kotlin-stdlib:+'
+        compile 'org.jetbrains.kotlin:kotlin-reflect:+'
     }
 }
 
