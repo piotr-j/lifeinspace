@@ -10,12 +10,12 @@ import org.lwjgl.opengl.Display
  * Created by EvilEntity on 20/12/2015.
  */
 fun main(args: Array<String>) {
+    val bridge = object : PlatformBridge {
+        override fun getPixelScaleFactor() = Display.getPixelScaleFactor()
+    }
+
     val config = LwjglApplicationConfiguration()
     config.width = 1280
     config.height = 720
     LwjglApplication(LiSGame(bridge), config)
-}
-
-object bridge : PlatformBridge {
-    override fun getPixelScaleFactor() = Display.getPixelScaleFactor()
 }

@@ -12,11 +12,11 @@ import io.piotrjastrzebski.lis.PlatformBridge
 public class AndroidLauncher : AndroidApplication() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val bridge = object : PlatformBridge {
+            override fun getPixelScaleFactor() = 1f
+        }
+
         val config = AndroidApplicationConfiguration()
         initialize(LiSGame(bridge), config)
-    }
-
-    object bridge : PlatformBridge{
-        override fun getPixelScaleFactor() = 1f
     }
 }
