@@ -15,14 +15,11 @@ public const val VP_WIDTH = 1280 * INV_SCALE;
 public const val VP_HEIGHT = 720 * INV_SCALE;
 
 class LiSGame(val bridge: PlatformBridge) : Game() {
-    internal lateinit var assets: Assets
-    internal lateinit var batch: SpriteBatch
-    internal lateinit var renderer: ShapeRenderer
+    internal val assets: Assets by lazy { Assets(bridge.getPixelScaleFactor()) }
+    internal val batch: SpriteBatch by lazy { SpriteBatch()}
+    internal val renderer: ShapeRenderer by lazy { ShapeRenderer()}
 
     override fun create() {
-        assets = Assets(bridge.getPixelScaleFactor())
-        batch = SpriteBatch()
-        renderer = ShapeRenderer()
         setScreen(LoadingScreen(this))
     }
 

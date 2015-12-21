@@ -26,12 +26,12 @@ abstract class BaseScreen(val game: LiSGame) : Screen, InputProcessor {
     protected val gameViewport: ExtendViewport
     protected val guiViewport: ScreenViewport
 
-    protected val batch: SpriteBatch
-    protected val shapeRenderer: ShapeRenderer
+    protected val batch: SpriteBatch by lazy { game.batch }
+    protected val shapeRenderer: ShapeRenderer by lazy { game.renderer }
+    protected val assets: Assets by lazy { game.assets }
 
-    protected var stage: Stage
+    protected val stage: Stage
     protected var root: Table
-    protected var assets: Assets
 
     protected val multiplexer: InputMultiplexer
 
@@ -40,11 +40,8 @@ abstract class BaseScreen(val game: LiSGame) : Screen, InputProcessor {
         gameViewport = ExtendViewport(VP_WIDTH, VP_HEIGHT, gameCamera)
         guiCamera = OrthographicCamera()
         guiViewport = ScreenViewport(guiCamera)
-        batch = game.batch
-        shapeRenderer = game.renderer
 
         stage = Stage(guiViewport, batch)
-        assets = game.assets
         root = Table()
         root.setFillParent(true)
         stage.addActor(root)
