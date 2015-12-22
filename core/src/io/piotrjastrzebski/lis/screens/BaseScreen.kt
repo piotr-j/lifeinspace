@@ -21,10 +21,10 @@ import io.piotrjastrzebski.lis.utils.Assets
  * Created by EvilEntity on 21/12/2015.
  */
 abstract class BaseScreen(val game: LiSGame) : Screen, InputProcessor {
-    protected val gameCamera: OrthographicCamera
-    protected val guiCamera: OrthographicCamera
-    protected val gameViewport: ExtendViewport
-    protected val guiViewport: ScreenViewport
+    protected val gameCamera = OrthographicCamera()
+    protected val gameViewport = ExtendViewport(VP_WIDTH, VP_HEIGHT, gameCamera)
+    protected val guiCamera = OrthographicCamera()
+    protected val guiViewport = ScreenViewport(guiCamera)
 
     protected val batch: SpriteBatch by lazy { game.batch }
     protected val shapeRenderer: ShapeRenderer by lazy { game.renderer }
@@ -36,11 +36,6 @@ abstract class BaseScreen(val game: LiSGame) : Screen, InputProcessor {
     protected val multiplexer: InputMultiplexer
 
     init {
-        gameCamera = OrthographicCamera()
-        gameViewport = ExtendViewport(VP_WIDTH, VP_HEIGHT, gameCamera)
-        guiCamera = OrthographicCamera()
-        guiViewport = ScreenViewport(guiCamera)
-
         stage = Stage(guiViewport, batch)
         root = Table()
         root.setFillParent(true)
