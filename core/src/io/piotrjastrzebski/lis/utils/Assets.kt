@@ -1,6 +1,7 @@
 package io.piotrjastrzebski.lis.utils
 
 import com.badlogic.gdx.assets.AssetManager
+import com.badlogic.gdx.graphics.glutils.ShaderProgram
 import com.badlogic.gdx.maps.tiled.TiledMap
 import com.badlogic.gdx.maps.tiled.TmxMapLoader
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
@@ -12,15 +13,19 @@ import com.kotcrab.vis.ui.VisUI
 class Assets(val pixelScaleFactor: Float) {
     protected lateinit var skin: Skin get
     protected lateinit var map :TiledMap
+    protected lateinit var radialShader :ShaderProgram
     private val SKIN_PATH = "gui/uiskin.json"
     private val MAP_PATH = "map.tmx"
+    private val RADIAL_SHADER_PATH = "shaders/radial"
     private val assetManager: AssetManager
 
     init {
         assetManager = AssetManager()
         assetManager.setLoader(TiledMap::class.java, TmxMapLoader())
+        assetManager.setLoader(ShaderProgram::class.java, ShaderLoader())
         assetManager.load<Skin>(SKIN_PATH, Skin::class.java)
         assetManager.load<TiledMap>(MAP_PATH, TiledMap::class.java)
+        assetManager.load<ShaderProgram>(RADIAL_SHADER_PATH, ShaderProgram::class.java)
         // TODO load assets and stuff
     }
 
@@ -40,9 +45,11 @@ class Assets(val pixelScaleFactor: Float) {
 
         skin = assetManager.get(SKIN_PATH, Skin::class.java)
         map = assetManager.get(MAP_PATH, TiledMap::class.java)
+        radialShader = assetManager.get(RADIAL_SHADER_PATH, ShaderProgram::class.java)
     }
 
     fun dispose() {
         assetManager.dispose()
+        VisUI.dispose()
     }
 }
