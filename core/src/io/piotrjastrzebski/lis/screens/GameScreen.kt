@@ -4,6 +4,8 @@ import com.artemis.World
 import com.artemis.WorldConfiguration
 import com.badlogic.gdx.Gdx
 import io.piotrjastrzebski.lis.LiSGame
+import io.piotrjastrzebski.lis.game.processors.MapRenderer
+import io.piotrjastrzebski.lis.utils.Resizing
 
 /**
  * Created by EvilEntity on 21/12/2015.
@@ -26,15 +28,22 @@ class GameScreen(game: LiSGame) : BaseScreen(game) {
         config.register(batch)
         config.register(assets)
         // TODO systems and all this stuff
-
+        config.setSystem(MapRenderer())
         world = World(config)
     }
 
     override fun render(delta: Float) {
         super.render(delta)
-        Gdx.app.log("TODO", "Game!")
         world.delta = delta
         world.process()
+    }
+
+    override fun resize(width: Int, height: Int) {
+        super.resize(width, height)
+        // TODO filter, forEach?
+        for (system in world.systems) {
+            if (system is Resizing) system.resize(width, height)
+        }
     }
 
     override fun dispose() {

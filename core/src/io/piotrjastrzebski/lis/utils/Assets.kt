@@ -11,9 +11,9 @@ import com.kotcrab.vis.ui.VisUI
  * Created by EvilEntity on 21/12/2015.
  */
 class Assets(val pixelScaleFactor: Float) {
-    protected lateinit var skin: Skin get
-    protected lateinit var map :TiledMap
-    protected lateinit var radialShader :ShaderProgram
+    public lateinit var skin: Skin
+    public lateinit var map: TiledMap
+    public lateinit var radialShader: ShaderProgram
     private val SKIN_PATH = "gui/uiskin.json"
     private val MAP_PATH = "map.tmx"
     private val RADIAL_SHADER_PATH = "shaders/radial"
