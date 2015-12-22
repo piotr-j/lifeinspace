@@ -4,7 +4,7 @@ import com.artemis.World
 import com.artemis.WorldConfiguration
 import com.badlogic.gdx.Gdx
 import io.piotrjastrzebski.lis.LiSGame
-import io.piotrjastrzebski.lis.game.processors.MapRenderer
+import io.piotrjastrzebski.lis.game.processors.*
 import io.piotrjastrzebski.lis.utils.Resizing
 
 /**
@@ -27,8 +27,14 @@ class GameScreen(game: LiSGame) : BaseScreen(game) {
         config.register(shapeRenderer)
         config.register(batch)
         config.register(assets)
-        // TODO systems and all this stuff
+
+        config.setSystem(CameraMove())
+        // NOTE stuff that changes camera must be before CameraUpdate
+        config.setSystem(CameraUpdate())
+        config.setSystem(ViewBounds())
+        config.setSystem(CursorPosition())
         config.setSystem(MapRenderer())
+
         world = World(config)
     }
 
