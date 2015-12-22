@@ -17,5 +17,6 @@ fun main(args: Array<String>) {
     val config = LwjglApplicationConfiguration()
     config.width = 1280
     config.height = 720
+    config.useHDPI = true
     LwjglApplication(LiSGame(bridge), config)
 }
