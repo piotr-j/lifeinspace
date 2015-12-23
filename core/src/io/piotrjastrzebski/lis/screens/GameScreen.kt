@@ -33,6 +33,7 @@ class GameScreen(game: LiSGame) : BaseScreen(game) {
         config.setSystem(CameraUpdate())
         config.setSystem(ViewBounds())
         config.setSystem(CursorPosition())
+        config.setSystem(Renderer())
         config.setSystem(MapRenderer())
 
         world = World(config)
@@ -53,7 +54,7 @@ class GameScreen(game: LiSGame) : BaseScreen(game) {
     }
 
     override fun dispose() {
-        super.dispose()
         world.dispose()
+        super.dispose()
     }
 }

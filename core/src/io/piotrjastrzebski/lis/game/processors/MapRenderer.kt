@@ -16,7 +16,7 @@ import io.piotrjastrzebski.lis.utils.WrapTiledMapRenderer
 // TODO this map size is too small, at least double that
 var MAP_WIDTH = 64f
 var MAP_HEIGHT = 48f
-class MapRenderer() : BaseSystem() {
+class MapRenderer() : BaseSystem(), SubRenderer {
     @field:Wire(name = WIRE_GAME_CAM) lateinit var camera: OrthographicCamera
     @field:Wire lateinit var assets: Assets
     @field:Wire lateinit var batch: SpriteBatch
@@ -34,11 +34,11 @@ class MapRenderer() : BaseSystem() {
         // TODO we probably want to center on a start spot in the map eventually
         camera.position.x = MAP_WIDTH/2;
         camera.position.y = MAP_HEIGHT/2;
+        // render called externally
+        isEnabled = false
     }
 
-    override fun processSystem() {
-        batch.projectionMatrix = camera.combined
-        batch.begin()
+    override fun render() {
         mapRenderer.setOffsets(0f, 0f)
         mapRenderer.setView(camera.combined, vb.x, vb.y, vb.width, vb.height)
         mapRenderer.render()
@@ -51,6 +51,7 @@ class MapRenderer() : BaseSystem() {
         mapRenderer.setOffsets(-MAP_WIDTH, -MAP_HEIGHT)
         mapRenderer.setView(camera.combined, vb.x + MAP_WIDTH, vb.y + MAP_HEIGHT, vb.width, vb.height)
         mapRenderer.render()
-        batch.end()
     }
+
+    override fun processSystem() {}
 }
