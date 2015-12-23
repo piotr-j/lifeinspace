@@ -29,6 +29,11 @@ class MapRenderer() : BaseSystem() {
         var layer = assets.map.layers.get(0) as TiledMapTileLayer
         MAP_WIDTH = layer.width.toFloat()
         MAP_HEIGHT = layer.height.toFloat()
+
+        // center camera on the map
+        // TODO we probably want to center on a start spot in the map eventually
+        camera.position.x = MAP_WIDTH/2;
+        camera.position.y = MAP_HEIGHT/2;
     }
 
     override fun processSystem() {
