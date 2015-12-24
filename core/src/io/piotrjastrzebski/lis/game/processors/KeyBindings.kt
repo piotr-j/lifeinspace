@@ -2,6 +2,7 @@ package io.piotrjastrzebski.lis.game.processors
 
 import com.artemis.BaseSystem
 import com.badlogic.gdx.Input.Keys
+import com.badlogic.gdx.utils.Array
 import com.badlogic.gdx.utils.IntMap
 import io.piotrjastrzebski.lis.utils.InputHandler
 
@@ -19,14 +20,24 @@ class KeyBindings : BaseSystem(), InputHandler {
 
     }
 
-    val keyToFunDown = IntMap<Function1<Int, Boolean>>()
-    val keyToFunUp = IntMap<Function1<Int, Boolean>>()
+    val keyToFunDown = IntMap<com.badlogic.gdx.utils.Array<Function1<Int, Boolean>>>()
+    val keyToFunUp = IntMap<com.badlogic.gdx.utils.Array<Function1<Int, Boolean>>>()
 
     fun register(keys: IntArray, cbDown: (key: Int) -> Boolean, cbUp: (key: Int) -> Boolean) {
         // todo priority?
         for (key in keys) {
-            keyToFunDown.put(key, cbDown)
-            keyToFunUp.put(key, cbUp)
+            var downs: Array<(Int) -> Boolean>? = keyToFunDown.get(key, null)
+            if (downs == null) {
+                downs = Array()
+                keyToFunDown.put(key, downs)
+            }
+            downs.add(cbDown)
+            var ups: Array<(Int) -> Boolean>? = keyToFunUp.get(key, null)
+            if (ups == null) {
+                ups = Array()
+                keyToFunUp.put(key, ups)
+            }
+            ups.add(cbUp)
         }
     }
 
@@ -45,8 +56,11 @@ class KeyBindings : BaseSystem(), InputHandler {
     }
 
     private fun modKeyDown(keyCode: Int): Boolean {
-        if (keyToFunDown.containsKey(keyCode))
-            keyToFunDown.get(keyCode).invoke(keyCode)
+        if (keyToFunDown.containsKey(keyCode)) {
+            for (function in keyToFunDown.get(keyCode)) {
+                if (function.invoke(keyCode)) break
+            }
+        }
         return false
     }
 
@@ -61,8 +75,11 @@ class KeyBindings : BaseSystem(), InputHandler {
     }
 
     private fun modKeyUp(keyCode: Int): Boolean {
-        if (keyToFunUp.containsKey(keyCode))
-            keyToFunUp.get(keyCode).invoke(keyCode)
+        if (keyToFunUp.containsKey(keyCode)) {
+            for (function in keyToFunUp.get(keyCode)) {
+                if (function.invoke(keyCode)) break
+            }
+        }
         return false
     }
 
