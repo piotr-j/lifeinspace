@@ -35,6 +35,9 @@ class GameScreen(game: LiSGame) : BaseScreen(game) {
         config.setSystem(CursorPosition())
         config.setSystem(Renderer())
         config.setSystem(MapRenderer())
+        val kbs = KeyBindings()
+        multiplexer.addProcessor(kbs)
+        config.setSystem(kbs)
 
         world = World(config)
     }
