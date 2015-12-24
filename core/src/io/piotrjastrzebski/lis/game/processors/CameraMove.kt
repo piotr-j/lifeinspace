@@ -2,11 +2,8 @@ package io.piotrjastrzebski.lis.game.processors
 
 import com.artemis.BaseSystem
 import com.artemis.annotations.Wire
-import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.Input
 import com.badlogic.gdx.Input.Keys
 import com.badlogic.gdx.graphics.OrthographicCamera
-import com.badlogic.gdx.math.Vector2
 import io.piotrjastrzebski.lis.screens.WIRE_GAME_CAM
 
 /**
@@ -15,12 +12,28 @@ import io.piotrjastrzebski.lis.screens.WIRE_GAME_CAM
 class CameraMove : BaseSystem() {
     @field:Wire(name = WIRE_GAME_CAM) lateinit var camera: OrthographicCamera
     @field:Wire lateinit var keybinds: KeyBindings
-
+    val moveKeys = intArrayOf(
+            Keys.LEFT, Keys.RIGHT, Keys.UP, Keys.DOWN,
+            Keys.A, Keys.D, Keys.W, Keys.S, Keys.SHIFT_LEFT, Keys.SHIFT_LEFT);
+    val cbDown: (Int) -> Boolean = { keyDown(it)}
+    val cbUp: (Int) -> Boolean = { keyUp(it)}
     override fun initialize() {
-        keybinds.register(intArrayOf(
-                Keys.LEFT, Keys.RIGHT, Keys.UP, Keys.DOWN,
-                Keys.A, Keys.D, Keys.W, Keys.S, Keys.SHIFT_LEFT, Keys.SHIFT_LEFT),
-                { keyDown(it)}, { keyUp(it)})
+        keybinds.register(moveKeys, cbDown, cbUp)
+        keybinds.register(intArrayOf(Keys.F1), {toggle()}, {false})
+    }
+
+    private fun toggle(): Boolean {
+        isEnabled = !isEnabled
+        // not perfect, quite possible to get invalid values if this gets reset while buttons are pressed
+        shift = 0
+        moveX = 0
+        moveY = 0
+        if (isEnabled) {
+            keybinds.register(moveKeys, cbDown, cbUp)
+        } else {
+            keybinds.deregister(moveKeys, cbDown, cbUp)
+        }
+        return true
     }
 
     var shift = 0

@@ -41,6 +41,13 @@ class KeyBindings : BaseSystem(), InputHandler {
         }
     }
 
+    fun deregister(keys: IntArray, cbDown: (Int) -> Boolean, cbUp: (Int) -> Boolean) {
+        for (key in keys) {
+            keyToFunDown.get(key, null)?.removeValue(cbDown, true)
+            keyToFunUp.get(key, null)?.removeValue(cbUp, true)
+        }
+    }
+
     override fun processSystem() {
         // do nothing?
     }
