@@ -105,7 +105,3 @@ class KeyBindings : BaseSystem(), InputHandler {
     fun hasMod(mods: Int, mod: Int) = mods and mod === 0
     fun getKeycode(meta: Int) = meta and 0xFFFF
 }
-
-@Target(AnnotationTarget.FUNCTION)
-@Retention(AnnotationRetention.RUNTIME)
-public annotation class KeyBind(val bindings: IntArray, val priority: Int)
