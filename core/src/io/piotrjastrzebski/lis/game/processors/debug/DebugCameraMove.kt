@@ -1,15 +1,17 @@
-package io.piotrjastrzebski.lis.game.processors
+package io.piotrjastrzebski.lis.game.processors.debug
 
 import com.artemis.BaseSystem
 import com.artemis.annotations.Wire
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input.Keys
 import com.badlogic.gdx.graphics.OrthographicCamera
+import io.piotrjastrzebski.lis.game.processors.KeyBindings
 import io.piotrjastrzebski.lis.screens.WIRE_GAME_CAM
 
 /**
  * Created by EvilEntity on 22/12/2015.
  */
-class CameraMove : BaseSystem() {
+class DebugCameraMove : BaseSystem() {
     @field:Wire(name = WIRE_GAME_CAM) lateinit var camera: OrthographicCamera
     @field:Wire lateinit var keybinds: KeyBindings
     val moveKeys = intArrayOf(
@@ -33,7 +35,8 @@ class CameraMove : BaseSystem() {
         } else {
             keybinds.deregister(moveKeys, cbDown, cbUp)
         }
-        return true
+        Gdx.app.log("DebugCameraMove", "IsEnabled: $isEnabled")
+        return false
     }
 
     var shift = 0
@@ -57,7 +60,7 @@ class CameraMove : BaseSystem() {
             Keys.DOWN, Keys.S -> moveY--
             Keys.SHIFT_LEFT, Keys.SHIFT_RIGHT -> shift++
         }
-        return true
+        return isEnabled
     }
 
     fun keyUp(keycode: Int): Boolean {
@@ -68,6 +71,6 @@ class CameraMove : BaseSystem() {
             Keys.DOWN, Keys.S -> moveY++
             Keys.SHIFT_LEFT, Keys.SHIFT_RIGHT -> shift--
         }
-        return true
+        return isEnabled
     }
 }

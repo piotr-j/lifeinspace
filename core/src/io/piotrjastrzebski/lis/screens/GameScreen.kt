@@ -1,10 +1,13 @@
 package io.piotrjastrzebski.lis.screens
 
+import com.artemis.InvocationStrategy
 import com.artemis.World
 import com.artemis.WorldConfiguration
 import com.badlogic.gdx.Gdx
 import io.piotrjastrzebski.lis.LiSGame
 import io.piotrjastrzebski.lis.game.processors.*
+import io.piotrjastrzebski.lis.game.processors.debug.DebugBox2dRenderer
+import io.piotrjastrzebski.lis.game.processors.debug.DebugCameraMove
 import io.piotrjastrzebski.lis.utils.Resizing
 
 /**
@@ -28,16 +31,20 @@ class GameScreen(game: LiSGame) : BaseScreen(game) {
         config.register(batch)
         config.register(assets)
 
-        config.setSystem(CameraMove())
+        config.setSystem(DebugCameraMove())
         // NOTE stuff that changes camera must be before CameraUpdate
         config.setSystem(CameraUpdate())
         config.setSystem(ViewBounds())
         config.setSystem(CursorPosition())
+        config.setSystem(PlayerMove())
+        config.setSystem(Physics())
         config.setSystem(Renderer())
         config.setSystem(MapRenderer())
+        config.setSystem(DebugBox2dRenderer())
         val kbs = KeyBindings()
         multiplexer.addProcessor(kbs)
         config.setSystem(kbs)
+        config.setInvocationStrategy(InvocationStrategy())
 
         world = World(config)
     }

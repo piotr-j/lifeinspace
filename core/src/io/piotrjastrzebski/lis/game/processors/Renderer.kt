@@ -13,6 +13,7 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer
 import io.piotrjastrzebski.lis.INV_SCALE
 import io.piotrjastrzebski.lis.VP_HEIGHT
 import io.piotrjastrzebski.lis.VP_WIDTH
+import io.piotrjastrzebski.lis.game.processors.debug.DebugBox2dRenderer
 import io.piotrjastrzebski.lis.screens.WIRE_GAME_CAM
 import io.piotrjastrzebski.lis.utils.Assets
 import io.piotrjastrzebski.lis.utils.Resizing
@@ -27,6 +28,7 @@ class Renderer() : BaseSystem(), Resizing {
     @field:Wire lateinit var batch: SpriteBatch
     @field:Wire lateinit var vb: ViewBounds
     @field:Wire lateinit var mapRenderer: MapRenderer
+    @field:Wire lateinit var box2dRenderer: DebugBox2dRenderer
     var fbo: FrameBuffer? = null
     val fboRegion = TextureRegion()
 
@@ -44,6 +46,7 @@ class Renderer() : BaseSystem(), Resizing {
         mapRenderer.render()
         // TODO render entities or whatever
         batch.end()
+        box2dRenderer.render()
         fbo!!.end()
 
         // TODO we want an option to disable this
