@@ -18,6 +18,10 @@ class BodyDef() : PooledComponent() {
     var groupIndex: Short = 0
     var maskBits: Short = 0
 
+    init {
+        reset()
+    }
+
     fun type(type: BodyType): BodyDef {
         def.type = type
         return this
