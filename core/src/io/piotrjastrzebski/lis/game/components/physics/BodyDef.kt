@@ -11,16 +11,12 @@ import com.badlogic.gdx.physics.box2d.BodyDef.BodyType
 class BodyDef() : PooledComponent() {
     var def = com.badlogic.gdx.physics.box2d.BodyDef()
 
-    var restitution: Float = 0.toFloat()
-    var friction: Float = 0.toFloat()
-    var density: Float = 0.toFloat()
-    var categoryBits: Short = 0
+    var restitution: Float = 0f
+    var friction: Float = 0f
+    var density: Float = 1f
+    var categoryBits: Short = 1
     var groupIndex: Short = 0
-    var maskBits: Short = 0
-
-    init {
-        reset()
-    }
+    var maskBits: Short = -1
 
     fun type(type: BodyType): BodyDef {
         def.type = type
