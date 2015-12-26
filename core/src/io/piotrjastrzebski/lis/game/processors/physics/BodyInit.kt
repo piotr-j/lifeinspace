@@ -56,7 +56,7 @@ class BodyInit : BaseEntitySystem(Aspect.all(BodyDef::class.java, Transform::cla
             fixtureDef.shape = polygon
             b2dBody.createFixture(fixtureDef)
 
-//            body.setTransform(transform.pos.x + boxDef!!.width, transform.pos.y + boxDef!!.height, transform.rot)
+            b2dBody.setTransform(trans.xy.x + boxDef.width, trans.xy.y + boxDef.height, trans.angle)
         }
 
 //        val polygonDef = mPolygonDef.getSafe(e)
@@ -73,7 +73,7 @@ class BodyInit : BaseEntitySystem(Aspect.all(BodyDef::class.java, Transform::cla
             circle.radius = circleDef.radius
             fixtureDef.shape = circle
             b2dBody.createFixture(fixtureDef)
-//            body.setTransform(transform.pos.x + circleDef!!.radius, transform.pos.y + circleDef!!.radius, transform.rot)
+            b2dBody.setTransform(trans.xy.x + circleDef.radius, trans.xy.y + circleDef.radius, trans.angle)
         }
     }
 
