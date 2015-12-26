@@ -17,9 +17,9 @@ import io.piotrjastrzebski.lis.screens.WIRE_GAME_CAM
  * Created by PiotrJ on 25/12/15.
  */
 class DebugBox2dRenderer : BaseSystem(), SubRenderer {
-    @field:Wire(name = WIRE_GAME_CAM) lateinit var camera: OrthographicCamera
-    @field:Wire lateinit var keybinds: KeyBindings
-    @field:Wire lateinit var physics: Physics
+    @Wire(name = WIRE_GAME_CAM) lateinit var camera: OrthographicCamera
+    @Wire lateinit var keybinds: KeyBindings
+    @Wire lateinit var physics: Physics
     var renderer = Box2DDebugRenderer()
     var render = false
     override fun initialize() {

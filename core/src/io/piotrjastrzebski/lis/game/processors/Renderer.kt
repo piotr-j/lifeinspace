@@ -25,13 +25,13 @@ import io.piotrjastrzebski.lis.utils.WrapTiledMapRenderer
  * Created by PiotrJ on 22/12/15.
  */
 class Renderer() : BaseSystem(), Resizing {
-    @field:Wire(name = WIRE_GAME_CAM) lateinit var camera: OrthographicCamera
-    @field:Wire lateinit var assets: Assets
-    @field:Wire lateinit var batch: SpriteBatch
-    @field:Wire lateinit var vb: ViewBounds
-    @field:Wire lateinit var mapRenderer: MapRenderer
-    @field:Wire lateinit var box2dRenderer: DebugBox2dRenderer
-    @field:Wire lateinit var keybinds: KeyBindings
+    @Wire(name = WIRE_GAME_CAM) lateinit var camera: OrthographicCamera
+    @Wire lateinit var assets: Assets
+    @Wire lateinit var batch: SpriteBatch
+    @Wire lateinit var vb: ViewBounds
+    @Wire lateinit var mapRenderer: MapRenderer
+    @Wire lateinit var box2dRenderer: DebugBox2dRenderer
+    @Wire lateinit var keybinds: KeyBindings
     var fbo: FrameBuffer? = null
     val fboRegion = TextureRegion()
     var shader: ShaderProgram? = null

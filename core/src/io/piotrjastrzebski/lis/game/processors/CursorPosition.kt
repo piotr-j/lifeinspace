@@ -12,7 +12,7 @@ import io.piotrjastrzebski.lis.screens.WIRE_GAME_CAM
  * Created by EvilEntity on 22/12/2015.
  */
 class CursorPosition : BaseSystem() {
-    @field:Wire(name = WIRE_GAME_CAM) lateinit var camera: OrthographicCamera
+    @Wire(name = WIRE_GAME_CAM) lateinit var camera: OrthographicCamera
     public var x = 0f
     public var y = 0f
     public val xy = Vector2()

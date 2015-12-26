@@ -9,7 +9,7 @@ import io.piotrjastrzebski.lis.screens.WIRE_GAME_CAM
  * Created by EvilEntity on 22/12/2015.
  */
 class CameraUpdate : BaseSystem() {
-    @field:Wire(name = WIRE_GAME_CAM) lateinit var camera: OrthographicCamera
+    @Wire(name = WIRE_GAME_CAM) lateinit var camera: OrthographicCamera
 
     override fun processSystem() {
         // if we move outside of desire range, we correct

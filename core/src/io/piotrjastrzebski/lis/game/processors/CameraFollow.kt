@@ -1,4 +1,4 @@
-package io.piotrjastrzebski.lis.game.processors.debug
+package io.piotrjastrzebski.lis.game.processors
 
 import com.artemis.Aspect
 import com.artemis.ComponentMapper
@@ -18,10 +18,10 @@ import io.piotrjastrzebski.lis.screens.WIRE_GAME_CAM
 class CameraFollow : IteratingSystem(Aspect.all(Transform::class.java, CameraFollower::class.java)) {
     public val TAG = CameraFollow::class.simpleName
 
-    @field:Wire(name = WIRE_GAME_CAM) lateinit var camera: OrthographicCamera
-    @field:Wire lateinit var keybinds: KeyBindings
-    @field:Wire lateinit var mCameraFollower: ComponentMapper<CameraFollower>
-    @field:Wire lateinit var mTransform: ComponentMapper<Transform>
+    @Wire(name = WIRE_GAME_CAM) lateinit var camera: OrthographicCamera
+    @Wire lateinit var keybinds: KeyBindings
+    @Wire lateinit var mCameraFollower: ComponentMapper<CameraFollower>
+    @Wire lateinit var mTransform: ComponentMapper<Transform>
 
     override fun initialize() {
         keybinds.register(intArrayOf(Keys.F6), {toggle()}, {false})

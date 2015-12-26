@@ -15,7 +15,7 @@ import io.piotrjastrzebski.lis.utils.Assets
  * Created by PiotrJ on 22/12/15.
  */
 class MapParser() : BaseSystem() {
-    @field:Wire lateinit var assets: Assets
+    @Wire lateinit var assets: Assets
 
     override fun initialize() {
         // eh, on insert map?

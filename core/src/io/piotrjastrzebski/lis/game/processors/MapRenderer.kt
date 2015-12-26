@@ -17,10 +17,10 @@ import io.piotrjastrzebski.lis.utils.WrapTiledMapRenderer
 var MAP_WIDTH = 64f
 var MAP_HEIGHT = 48f
 class MapRenderer() : BaseSystem(), SubRenderer {
-    @field:Wire(name = WIRE_GAME_CAM) lateinit var camera: OrthographicCamera
-    @field:Wire lateinit var assets: Assets
-    @field:Wire lateinit var batch: SpriteBatch
-    @field:Wire lateinit var vb: ViewBounds
+    @Wire(name = WIRE_GAME_CAM) lateinit var camera: OrthographicCamera
+    @Wire lateinit var assets: Assets
+    @Wire lateinit var batch: SpriteBatch
+    @Wire lateinit var vb: ViewBounds
 
     lateinit var mapRenderer: WrapTiledMapRenderer
 

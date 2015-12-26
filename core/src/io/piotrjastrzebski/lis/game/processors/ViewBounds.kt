@@ -14,8 +14,8 @@ import io.piotrjastrzebski.lis.screens.WIRE_GAME_VP
  * Created by EvilEntity on 22/12/2015.
  */
 class ViewBounds : BaseSystem() {
-    @field:Wire(name = WIRE_GAME_CAM) lateinit var camera: OrthographicCamera
-    @field:Wire(name = WIRE_GAME_VP) lateinit var viewport: ExtendViewport
+    @Wire(name = WIRE_GAME_CAM) lateinit var camera: OrthographicCamera
+    @Wire(name = WIRE_GAME_VP) lateinit var viewport: ExtendViewport
     public val vb = Rectangle()
     public var x = 0f
     public var y = 0f

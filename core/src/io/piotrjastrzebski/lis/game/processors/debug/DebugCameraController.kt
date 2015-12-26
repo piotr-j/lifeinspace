@@ -12,8 +12,8 @@ import io.piotrjastrzebski.lis.screens.WIRE_GAME_CAM
  * Created by EvilEntity on 22/12/2015.
  */
 class DebugCameraController : BaseSystem() {
-    @field:Wire(name = WIRE_GAME_CAM) lateinit var camera: OrthographicCamera
-    @field:Wire lateinit var keybinds: KeyBindings
+    @Wire(name = WIRE_GAME_CAM) lateinit var camera: OrthographicCamera
+    @Wire lateinit var keybinds: KeyBindings
     val moveKeys = intArrayOf(
             Keys.LEFT, Keys.RIGHT, Keys.UP, Keys.DOWN,
             Keys.A, Keys.D, Keys.W, Keys.S, Keys.SHIFT_LEFT, Keys.SHIFT_RIGHT);

@@ -17,13 +17,13 @@ import io.piotrjastrzebski.lis.game.components.physics.PolygonDef
  * Created by PiotrJ on 25/12/15.
  */
 class BodyInit : BaseEntitySystem(Aspect.all(BodyDef::class.java, Transform::class.java).one(BoxDef::class.java, CircleDef::class.java, PolygonDef::class.java)) {
-    @field:Wire lateinit var physics: Physics
-    @field:Wire lateinit var mTransform: ComponentMapper<Transform>
-    @field:Wire lateinit var mBodyDef: ComponentMapper<BodyDef>
-    @field:Wire lateinit var mBody: ComponentMapper<Body>
-    @field:Wire lateinit var mBoxDef: ComponentMapper<BoxDef>
-    @field:Wire lateinit var mCircleDef: ComponentMapper<CircleDef>
-    @field:Wire lateinit var mPolygonDef: ComponentMapper<PolygonDef>
+    @Wire lateinit var physics: Physics
+    @Wire lateinit var mTransform: ComponentMapper<Transform>
+    @Wire lateinit var mBodyDef: ComponentMapper<BodyDef>
+    @Wire lateinit var mBody: ComponentMapper<Body>
+    @Wire lateinit var mBoxDef: ComponentMapper<BoxDef>
+    @Wire lateinit var mCircleDef: ComponentMapper<CircleDef>
+    @Wire lateinit var mPolygonDef: ComponentMapper<PolygonDef>
 
     val fixtureDef = FixtureDef()
     var polygon = PolygonShape()
