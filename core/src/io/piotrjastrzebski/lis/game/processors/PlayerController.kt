@@ -16,7 +16,7 @@ import io.piotrjastrzebski.lis.screens.WIRE_GAME_CAM
 /**
  * Created by EvilEntity on 22/12/2015.
  */
-class PlayerMove : IteratingSystem(Aspect.all(Player::class.java, Transform::class.java)) {
+class PlayerController : IteratingSystem(Aspect.all(Player::class.java, Transform::class.java)) {
     @field:Wire(name = WIRE_GAME_CAM) lateinit var camera: OrthographicCamera
     @field:Wire lateinit var keybinds: KeyBindings
     @field:Wire lateinit var mTransform: ComponentMapper<Transform>
