@@ -3,9 +3,11 @@ package io.piotrjastrzebski.lis.screens
 import com.artemis.InvocationStrategy
 import com.artemis.World
 import com.artemis.WorldConfiguration
+import com.artemis.WorldConfigurationBuilder
 import com.badlogic.gdx.Gdx
 import io.piotrjastrzebski.lis.LiSGame
 import io.piotrjastrzebski.lis.game.processors.*
+import io.piotrjastrzebski.lis.game.processors.debug.CameraFollow
 import io.piotrjastrzebski.lis.game.processors.debug.DebugBox2dRenderer
 import io.piotrjastrzebski.lis.game.processors.debug.DebugCameraMove
 import io.piotrjastrzebski.lis.utils.Resizing
@@ -31,13 +33,17 @@ class GameScreen(game: LiSGame) : BaseScreen(game) {
         config.register(batch)
         config.register(assets)
 
-        config.setSystem(DebugCameraMove())
-        // NOTE stuff that changes camera must be before CameraUpdate
-        config.setSystem(CameraUpdate())
-        config.setSystem(ViewBounds())
         config.setSystem(CursorPosition())
         config.setSystem(PlayerMove())
         config.setSystem(Physics())
+        config.setSystem(BodyInit())
+
+        config.setSystem(DebugCameraMove())
+        config.setSystem(CameraFollow())
+        // NOTE stuff that changes camera must be before CameraUpdate
+        config.setSystem(CameraUpdate())
+        config.setSystem(ViewBounds())
+
         config.setSystem(Renderer())
         config.setSystem(MapRenderer())
         config.setSystem(DebugBox2dRenderer())

@@ -27,7 +27,7 @@ class PlayerMove : IteratingSystem(Aspect.all(Player::class.java, Transform::cla
     val cbUp: (Int) -> Boolean = { keyUp(it)}
     override fun initialize() {
 //        keybinds.register(moveKeys, cbDown, cbUp)
-        keybinds.register(intArrayOf(Keys.F1), {toggle()}, {false})
+        keybinds.register(Keys.F1, {toggle()}, {false})
         isEnabled = false
     }
 

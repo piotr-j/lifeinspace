@@ -26,19 +26,23 @@ class KeyBindings : BaseSystem(), InputHandler {
     fun register(keys: IntArray, cbDown: (key: Int) -> Boolean, cbUp: (key: Int) -> Boolean) {
         // todo priority?
         for (key in keys) {
-            var downs: Array<(Int) -> Boolean>? = keyToFunDown.get(key, null)
-            if (downs == null) {
-                downs = Array()
-                keyToFunDown.put(key, downs)
-            }
-            downs.add(cbDown)
-            var ups: Array<(Int) -> Boolean>? = keyToFunUp.get(key, null)
-            if (ups == null) {
-                ups = Array()
-                keyToFunUp.put(key, ups)
-            }
-            ups.add(cbUp)
+            register(key, cbDown, cbUp)
         }
+    }
+
+    fun register(key: Int, cbDown: (key: Int) -> Boolean, cbUp: (key: Int) -> Boolean) {
+        var downs: Array<(Int) -> Boolean>? = keyToFunDown.get(key, null)
+        if (downs == null) {
+            downs = Array()
+            keyToFunDown.put(key, downs)
+        }
+        downs.add(cbDown)
+        var ups: Array<(Int) -> Boolean>? = keyToFunUp.get(key, null)
+        if (ups == null) {
+            ups = Array()
+            keyToFunUp.put(key, ups)
+        }
+        ups.add(cbUp)
     }
 
     fun deregister(keys: IntArray, cbDown: (Int) -> Boolean, cbUp: (Int) -> Boolean) {
