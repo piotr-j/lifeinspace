@@ -33,6 +33,8 @@ class GameScreen(game: LiSGame) : BaseScreen(game) {
         config.register(batch)
         config.register(assets)
 
+        config.setSystem(MapParser())
+
         config.setSystem(CursorPosition())
         config.setSystem(PlayerMove())
         config.setSystem(Physics())
