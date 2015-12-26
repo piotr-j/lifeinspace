@@ -21,7 +21,7 @@ class DebugBox2dRenderer : BaseSystem(), SubRenderer {
     @Wire lateinit var keybinds: KeyBindings
     @Wire lateinit var physics: Physics
     var renderer = Box2DDebugRenderer()
-    var render = false
+    var render = true
     override fun initialize() {
         keybinds.register(Input.Keys.F5, {toggle()}, {false})
         isEnabled = false

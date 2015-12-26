@@ -5,10 +5,11 @@ import com.artemis.World
 import com.artemis.WorldConfiguration
 import io.piotrjastrzebski.lis.LiSGame
 import io.piotrjastrzebski.lis.game.processors.*
-import io.piotrjastrzebski.lis.game.processors.debug.CameraFollow
+import io.piotrjastrzebski.lis.game.processors.CameraFollow
 import io.piotrjastrzebski.lis.game.processors.debug.DebugBox2dRenderer
 import io.piotrjastrzebski.lis.game.processors.debug.DebugCameraController
 import io.piotrjastrzebski.lis.game.processors.physics.BodyInit
+import io.piotrjastrzebski.lis.game.processors.physics.BodyPositionWrap
 import io.piotrjastrzebski.lis.game.processors.physics.Physics
 import io.piotrjastrzebski.lis.utils.Resizing
 
@@ -34,12 +35,13 @@ class GameScreen(game: LiSGame) : BaseScreen(game) {
         config.register(assets)
 
         config.setSystem(MapParser())
+        config.setSystem(PlayerSpawner())
 
         config.setSystem(CursorPosition())
         config.setSystem(PlayerController())
         config.setSystem(Physics())
         config.setSystem(BodyInit())
-
+        config.setSystem(BodyPositionWrap())
         config.setSystem(DebugCameraController())
         config.setSystem(CameraFollow())
         // NOTE stuff that changes camera must be before CameraUpdate

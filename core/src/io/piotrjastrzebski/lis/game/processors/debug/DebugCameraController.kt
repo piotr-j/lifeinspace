@@ -20,8 +20,9 @@ class DebugCameraController : BaseSystem() {
     val cbDown: (Int) -> Boolean = { keyDown(it)}
     val cbUp: (Int) -> Boolean = { keyUp(it)}
     override fun initialize() {
-        keybinds.register(moveKeys, cbDown, cbUp)
+//        keybinds.register(moveKeys, cbDown, cbUp)
         keybinds.register(Keys.F1, {toggle()}, {false})
+        isEnabled = false
     }
 
     private fun toggle(): Boolean {

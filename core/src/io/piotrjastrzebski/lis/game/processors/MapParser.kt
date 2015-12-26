@@ -33,6 +33,7 @@ class MapParser() : BaseSystem() {
 
     private fun createTile(tile: TiledMapTile, x: Int, y: Int) {
         Gdx.app.log("MapParser", "Tiled ${tile.id} at $x, $y")
+        // TODO eventually, we want to render only base layer and replace other tiles with entities
         val e = world.createEntity().edit()
         val trans = e.create(Transform::class.java)
         trans.xy.set(x.toFloat(), y.toFloat())
