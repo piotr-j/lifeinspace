@@ -7,7 +7,7 @@ import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer
 import io.piotrjastrzebski.lis.game.processors.KeyBindings
-import io.piotrjastrzebski.lis.game.processors.Physics
+import io.piotrjastrzebski.lis.game.processors.physics.Physics
 import io.piotrjastrzebski.lis.game.processors.SubRenderer
 import io.piotrjastrzebski.lis.screens.WIRE_GAME_CAM
 

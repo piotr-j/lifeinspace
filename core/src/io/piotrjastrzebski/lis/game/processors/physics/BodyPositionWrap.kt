@@ -1,4 +1,4 @@
-package io.piotrjastrzebski.lis.game.processors
+package io.piotrjastrzebski.lis.game.processors.physics
 
 import com.artemis.Aspect
 import com.artemis.Entity

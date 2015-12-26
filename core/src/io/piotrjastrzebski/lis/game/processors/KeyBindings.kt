@@ -20,8 +20,8 @@ class KeyBindings : BaseSystem(), InputHandler {
 
     }
 
-    val keyToFunDown = IntMap<com.badlogic.gdx.utils.Array<Function1<Int, Boolean>>>()
-    val keyToFunUp = IntMap<com.badlogic.gdx.utils.Array<Function1<Int, Boolean>>>()
+    val keyToFunDown = IntMap<Array<Function1<Int, Boolean>>>()
+    val keyToFunUp = IntMap<Array<Function1<Int, Boolean>>>()
 
     fun register(keys: IntArray, cbDown: (key: Int) -> Boolean, cbUp: (key: Int) -> Boolean) {
         // todo priority?

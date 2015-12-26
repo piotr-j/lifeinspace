@@ -22,7 +22,7 @@ class PlayerMove : IteratingSystem(Aspect.all(Player::class.java, Transform::cla
     @field:Wire lateinit var mTransform: ComponentMapper<Transform>
     val moveKeys = intArrayOf(
             Keys.LEFT, Keys.RIGHT, Keys.UP, Keys.DOWN,
-            Keys.A, Keys.D, Keys.W, Keys.S, Keys.SHIFT_LEFT, Keys.SHIFT_LEFT);
+            Keys.A, Keys.D, Keys.W, Keys.S, Keys.SHIFT_LEFT, Keys.SHIFT_RIGHT);
     val cbDown: (Int) -> Boolean = { keyDown(it)}
     val cbUp: (Int) -> Boolean = { keyUp(it)}
     override fun initialize() {

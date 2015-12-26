@@ -1,4 +1,4 @@
-package io.piotrjastrzebski.lis.game.processors
+package io.piotrjastrzebski.lis.game.processors.physics
 
 import com.artemis.BaseSystem
 import com.badlogic.gdx.math.Vector2

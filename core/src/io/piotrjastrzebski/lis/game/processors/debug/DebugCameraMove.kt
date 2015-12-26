@@ -16,7 +16,7 @@ class DebugCameraMove : BaseSystem() {
     @field:Wire lateinit var keybinds: KeyBindings
     val moveKeys = intArrayOf(
             Keys.LEFT, Keys.RIGHT, Keys.UP, Keys.DOWN,
-            Keys.A, Keys.D, Keys.W, Keys.S, Keys.SHIFT_LEFT, Keys.SHIFT_LEFT);
+            Keys.A, Keys.D, Keys.W, Keys.S, Keys.SHIFT_LEFT, Keys.SHIFT_RIGHT);
     val cbDown: (Int) -> Boolean = { keyDown(it)}
     val cbUp: (Int) -> Boolean = { keyUp(it)}
     override fun initialize() {

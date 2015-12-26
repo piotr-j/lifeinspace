@@ -1,4 +1,4 @@
-package io.piotrjastrzebski.lis.game.processors
+package io.piotrjastrzebski.lis.game.processors.physics
 
 import com.artemis.*
 import com.artemis.annotations.Wire
