@@ -7,6 +7,8 @@ import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer
 import io.piotrjastrzebski.lis.game.processors.KeyBindings
+import io.piotrjastrzebski.lis.game.processors.MAP_HEIGHT
+import io.piotrjastrzebski.lis.game.processors.MAP_WIDTH
 import io.piotrjastrzebski.lis.game.processors.physics.Physics
 import io.piotrjastrzebski.lis.game.processors.SubRenderer
 import io.piotrjastrzebski.lis.screens.WIRE_GAME_CAM
@@ -22,7 +24,7 @@ class DebugBox2dRenderer : BaseSystem(), SubRenderer {
     var render = false
     override fun initialize() {
         keybinds.register(Input.Keys.F5, {toggle()}, {false})
-//        isEnabled = false
+        isEnabled = false
     }
 
     private fun toggle(): Boolean {
@@ -33,7 +35,19 @@ class DebugBox2dRenderer : BaseSystem(), SubRenderer {
 
     override fun render() {
         if (!render) return
+        render(0f, 0f)
+        render(MAP_WIDTH, 0f)
+        render(0f, MAP_HEIGHT)
+        render(MAP_WIDTH, MAP_HEIGHT)
+    }
+
+    private fun render(width: Float, height: Float) {
+        camera.position.x += width
+        camera.position.y += height
+        camera.update()
         renderer.render(physics.box2d, camera.combined)
+        camera.position.x -= width
+        camera.position.y -= height
     }
 
     override fun processSystem() { }
