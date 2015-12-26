@@ -3,12 +3,14 @@ package io.piotrjastrzebski.lis.game.processors
 import com.artemis.BaseSystem
 import com.artemis.annotations.Wire
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.Pixmap
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.graphics.glutils.FrameBuffer
+import com.badlogic.gdx.graphics.glutils.ShaderProgram
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer
 import io.piotrjastrzebski.lis.INV_SCALE
 import io.piotrjastrzebski.lis.VP_HEIGHT
@@ -29,11 +31,23 @@ class Renderer() : BaseSystem(), Resizing {
     @field:Wire lateinit var vb: ViewBounds
     @field:Wire lateinit var mapRenderer: MapRenderer
     @field:Wire lateinit var box2dRenderer: DebugBox2dRenderer
+    @field:Wire lateinit var keybinds: KeyBindings
     var fbo: FrameBuffer? = null
     val fboRegion = TextureRegion()
+    var shader: ShaderProgram? = null
 
     override fun initialize() {
+        keybinds.register(Input.Keys.F12, {toggleRadialShader()}, {false})
+        shader = assets.radialShader
+        Gdx.app.log("Renderer", "F12 - toggle radial shader")
+    }
 
+    private fun toggleRadialShader(): Boolean {
+        if (shader != null)
+            shader = null
+        else
+            shader = assets.radialShader
+        return true
     }
 
     override fun processSystem() {
@@ -49,8 +63,7 @@ class Renderer() : BaseSystem(), Resizing {
         box2dRenderer.render()
         fbo!!.end()
 
-        // TODO we want an option to disable this
-        batch.shader = assets.radialShader
+        batch.shader = shader
         batch.begin()
         batch.draw(fboRegion, camera.position.x - vb.width/2, camera.position.y - vb.height/2, vb.width, vb.height)
         batch.end()
