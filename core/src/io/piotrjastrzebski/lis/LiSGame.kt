@@ -9,7 +9,7 @@ import io.piotrjastrzebski.lis.utils.Assets
 /**
  * Created by EvilEntity on 20/12/2015.
  */
-public const val SCALE = 32f;
+public const val SCALE = 48f;
 public const val INV_SCALE = 1f/SCALE;
 public const val VP_WIDTH = 1280 * INV_SCALE;
 public const val VP_HEIGHT = 720 * INV_SCALE;
