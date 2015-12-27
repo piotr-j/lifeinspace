@@ -11,15 +11,10 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.graphics.glutils.FrameBuffer
 import com.badlogic.gdx.graphics.glutils.ShaderProgram
-import com.badlogic.gdx.maps.tiled.TiledMapTileLayer
-import io.piotrjastrzebski.lis.INV_SCALE
-import io.piotrjastrzebski.lis.VP_HEIGHT
-import io.piotrjastrzebski.lis.VP_WIDTH
 import io.piotrjastrzebski.lis.game.processors.debug.DebugBox2dRenderer
 import io.piotrjastrzebski.lis.screens.WIRE_GAME_CAM
 import io.piotrjastrzebski.lis.utils.Assets
 import io.piotrjastrzebski.lis.utils.Resizing
-import io.piotrjastrzebski.lis.utils.WrapTiledMapRenderer
 
 /**
  * Created by PiotrJ on 22/12/15.

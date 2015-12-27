@@ -37,7 +37,7 @@ class PlayerSpawner : BaseEntitySystem(Aspect.all(Player::class.java, Transform:
         e.create<Player>()
         val trans = e.create<Transform>()
         // TODO pick proper spawn position
-        trans.xy.set(32f, 24f)
+//        trans.xy.set(32f, 24f)
         trans.bounds.setSize(.75f, .75f)
         val bodyDef = e.create<BodyDef>()
         bodyDef.def.type = BodyType.DynamicBody

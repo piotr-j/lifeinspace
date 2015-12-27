@@ -34,14 +34,14 @@ class GameScreen(game: LiSGame) : BaseScreen(game) {
         config.register(batch)
         config.register(assets)
 
-        config.setSystem(MapParser())
+//        config.setSystem(MapParser())
         config.setSystem(PlayerSpawner())
 
         config.setSystem(CursorPosition())
-        config.setSystem(PlayerController())
         config.setSystem(Physics())
         config.setSystem(BodyInit())
         config.setSystem(BodyPositionWrap())
+        config.setSystem(PlayerController())
         config.setSystem(DebugCameraController())
         config.setSystem(CameraFollow())
         // NOTE stuff that changes camera must be before CameraUpdate

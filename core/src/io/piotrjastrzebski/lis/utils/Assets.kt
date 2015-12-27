@@ -15,7 +15,7 @@ class Assets(val pixelScaleFactor: Float) {
     public lateinit var map: TiledMap
     public lateinit var radialShader: ShaderProgram
     private val SKIN_PATH = "gui/uiskin.json"
-    private val MAP_PATH = "map.tmx"
+    private val MAP_PATH = "staggered.tmx"
     private val RADIAL_SHADER_PATH = "shaders/radial"
     private val assetManager: AssetManager
 

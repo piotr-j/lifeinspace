@@ -51,6 +51,7 @@ class DebugCameraController : BaseSystem() {
         if (moveX < 0) camera.position.x -= scale
         if (moveY > 0) camera.position.y += scale
         if (moveY < 0) camera.position.y -= scale
+        camera.update()
     }
 
     fun keyDown(keycode: Int): Boolean {

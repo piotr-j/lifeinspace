@@ -36,6 +36,7 @@ class PlayerController : IteratingSystem(Aspect.all(Player::class.java, Transfor
         keybinds.register(moveKeys, cbDown, cbUp)
         keybinds.register(Keys.F1, {toggle()}, {false})
         physics.register(this)
+//        isEnabled = false
     }
 
     val tmp = Vector2()
