@@ -39,6 +39,7 @@ class DebugBox2dRenderer : BaseSystem(), SubRenderer {
         render(MAP_WIDTH, 0f)
         render(0f, MAP_HEIGHT)
         render(MAP_WIDTH, MAP_HEIGHT)
+        camera.update()
     }
 
     private fun render(width: Float, height: Float) {
