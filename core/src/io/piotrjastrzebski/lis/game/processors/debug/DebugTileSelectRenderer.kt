@@ -33,6 +33,12 @@ class DebugTileSelectRenderer : BaseSystem(), SubRenderer {
     @Wire lateinit var assets: Assets
     val tileHeight = 16 * INV_SCALE
     var render = true
+    val tileVerts = floatArrayOf(
+            0f, .5f,                // 0
+            1f, 0f,                 // 1
+            2f, .5f,                // 2
+            1f, 1f                  // 3
+    )
     val rawVerts = floatArrayOf(
             0f, .5f,                // 0
             1f, 0f,                 // 1
@@ -51,7 +57,7 @@ class DebugTileSelectRenderer : BaseSystem(), SubRenderer {
         1, 5, 6,
         1, 2, 6
     )
-    val tile = Polygon(rawVerts)
+    val tile = Polygon(tileVerts)
     var mapWidth = 0
     var mapHeight = 0
     var layers = Array<Pair<TiledMapTileLayer, Float>>()
@@ -91,62 +97,37 @@ class DebugTileSelectRenderer : BaseSystem(), SubRenderer {
         renderer.setColor(0f, 1f, 0f, .5f)
         findSelected()
     }
+    /** x, y offsets from center tile to corner tiles*/
+    val tileOffsets = intArrayOf(0, 0, 0, -1, 1, -1, 0, 1, 1, 1)
 
     fun findSelected() {
-        var csx = if (cs.x < 0) cs.x -2 else cs.x
-        var csy = if (cs.y < 0) cs.y -1 else cs.y
-
-        val hOffset = tileHeight
-        // we offset the mouse pos down, so it matches the actual map tile position
-        csy -= hOffset
-
-        val t1x = csx.toInt()/2
-        val t1y = csy.toInt()*2
-
-        val t2x = t1x
-        val t2y = t1y -1
-
-        val t3x = t1x +1
-        val t3y = t1y -1
-
-        val t4x = t1x
-        val t4y = t1y +1
-
-        val t5x = t1x +1
-        val t5y = t1y +1
-        drawFancyTile(t4x, t4y, hOffset)
-        drawFancyTile(t5x, t5y, hOffset)
-        drawFancyTile(t1x, t1y, hOffset)
-        drawFancyTile(t2x, t2y, hOffset)
-        drawFancyTile(t3x, t3y, hOffset)
-        // check middle tile first, then corner tiles
-//        renderTile(t2x, t2y, 0f)
-//        renderTile(t3x, t3y, 0f)
-//        renderTile(t4x, t4y, 0f)
-//        renderer.color.a = 1f
-//        if (checkTile(t1x, t1y, hOffset)) {
-//            renderTile(t1x, t1y, hOffset)
-//        }
-//        if (checkTile(t2x, t2y, hOffset)) {
-//            renderTile(t2x, t2y, hOffset)
-//        }
-//        if (checkTile(t3x, t3y, hOffset)) {
-//            renderTile(t3x, t3y, hOffset)
-//        }
-//        if (checkTile(t4x, t4y, hOffset)) {
-//            renderTile(t4x, t4y, hOffset)
-//        }
+        layers@ for ((layer, offset) in layers) {
+            var csx = if (cs.x < 0) cs.x - 2 else cs.x
+            var csy = if (cs.y < 0) cs.y - 1 else cs.y
+            val hOffset = offset + tileHeight
+            // we offset the mouse pos down, so it matches the actual map tile position
+            csy -= hOffset
+            val tx = csx.toInt() / 2
+            val ty = csy.toInt() * 2
+            for (id in 0..tileOffsets.lastIndex step 2) {
+                val x = tx + tileOffsets[id]
+                val y = ty + tileOffsets[id + 1]
+                val cell = checkTile(x, y, hOffset, layer)
+                if (cell != null) {
+                    // TODO do something with the cell
+                    drawFancyTile(x, y, hOffset)
+                    break@layers
+                }
+            }
+        }
     }
 
     private fun drawFancyTile(tx: Int, ty: Int, hOffset: Float) {
         renderer.begin(ShapeRenderer.ShapeType.Filled)
-//        renderer.color = Color.YELLOW
-//        renderer.color.a = .33f
-//        renderer.rect(tx * 2f, ty / 2f + hOffset, 2f, 1f)
-        renderer.color = Color.MAGENTA
-        renderer.color.a = .75f
+//        renderer.color = Color.MAGENTA
+//        renderer.color.a = .75f
         // tile as far as map is concerned, base tiles have height of 16 pixels
-        renderTile(tx, ty, -tileHeight, false)
+//        renderTile(tx, ty, -tileHeight)
         renderer.color = Color.GREEN
         renderer.color.a = .75f
         renderTile(tx, ty, hOffset -tileHeight)
@@ -167,15 +148,18 @@ class DebugTileSelectRenderer : BaseSystem(), SubRenderer {
         return tmpPos.set(tx, ty + hOffset + tileHeight)
     }
 
-    private fun checkTile(x: Int, y: Int, hOffset:Float = 0f): Boolean {
-        val pos = calculateTilePos(x, y, hOffset)
+    private fun checkTile(x: Int, y: Int, hOffset: Float = 0f, layer: TiledMapTileLayer): TiledMapTileLayer.Cell? {
+        val wx = (x % mapWidth + mapWidth) % mapWidth
+        val wy = (y % mapHeight + mapHeight) % mapHeight
+        val cell = layer.getCell(wx, wy) ?: return null
+        // TODO do something with the cell
+        val pos = calculateTilePos(x, y, hOffset -tileHeight)
         tile.setPosition(pos.x, pos.y)
-        return tile.contains(cs.x, cs.y)
+        return if (tile.contains(cs.x, cs.y)) cell else null
     }
 
-    private fun renderTile(x:Int, y:Int, hOffset:Float = 0f, depth:Boolean = true) {
+    private fun renderTile(x:Int, y:Int, hOffset:Float = 0f) {
         val pos = calculateTilePos(x, y, hOffset)
-        tile.setPosition(pos.x, pos.y)
         val count = if (hOffset >= tileHeight) 5 else 1
         for (id in 0..count) {
             val v0 = indices[id * 3] * 2
@@ -192,7 +176,7 @@ class DebugTileSelectRenderer : BaseSystem(), SubRenderer {
     private fun renderTilePoly(x:Int, y:Int, hOffset:Float = 0f) {
         val pos = calculateTilePos(x, y, hOffset)
         tile.setPosition(pos.x, pos.y)
-        renderer.polygon(tile.transformedVertices, 0, 8)
+        renderer.polygon(tile.transformedVertices)
     }
 
     override fun processSystem() { }
