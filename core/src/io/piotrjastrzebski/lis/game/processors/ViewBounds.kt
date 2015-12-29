@@ -19,6 +19,8 @@ class ViewBounds : BaseSystem() {
     public val vb = Rectangle()
     public var x = 0f
     public var y = 0f
+    public var cx = 0f
+    public var cy = 0f
     public var width = VP_WIDTH
     public var height = VP_HEIGHT
     override fun processSystem() {
@@ -27,6 +29,8 @@ class ViewBounds : BaseSystem() {
                 viewport.worldWidth * camera.zoom, viewport.worldHeight * camera.zoom)
         x = vb.x
         y = vb.y
+        cx = camera.position.x
+        cy = camera.position.y
         width = vb.width
         height = vb.height
     }
