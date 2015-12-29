@@ -15,6 +15,8 @@ class CursorPosition : BaseSystem() {
     @Wire(name = WIRE_GAME_CAM) lateinit var camera: OrthographicCamera
     public var x = 0f
     public var y = 0f
+    public var wx = 0f
+    public var wy = 0f
     public val xy = Vector2()
     val tmp = Vector3()
     override fun processSystem() {
@@ -22,5 +24,12 @@ class CursorPosition : BaseSystem() {
         xy.set(tmp.x, tmp.y)
         x = xy.x
         y = xy.y
+        // wrap position so they are always in [0, mapDim] range
+        wx = x
+        while (wx > MAP_WIDTH) wx -= MAP_WIDTH
+        while (wx < 0) wx += MAP_WIDTH
+        wy = y
+        while (wy > MAP_HEIGHT) wy -= MAP_HEIGHT
+        while (wy < 0) wy += MAP_HEIGHT
     }
 }
