@@ -14,6 +14,7 @@ import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.math.Polygon
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer
+import com.badlogic.gdx.utils.Array
 import io.piotrjastrzebski.lis.INV_SCALE
 import io.piotrjastrzebski.lis.game.components.Transform
 import io.piotrjastrzebski.lis.game.processors.*
@@ -51,15 +52,29 @@ class DebugTileSelectRenderer : BaseSystem(), SubRenderer {
         1, 2, 6
     )
     val tile = Polygon(rawVerts)
-    var layerWidth = 0
-    var layerHeight = 0
+    var mapWidth = 0
+    var mapHeight = 0
+    var layers = Array<Pair<TiledMapTileLayer, Float>>()
 
     override fun initialize() {
         keybinds.register(Input.Keys.F11, {toggle()}, {false})
         isEnabled = false
-        val ground = assets.map.layers.get("ground") as TiledMapTileLayer
-        layerWidth = ground.width
-        layerHeight = ground.height
+        val mapLayers = assets.map.layers
+        fun getLayer(name: String): Pair<TiledMapTileLayer, Float> {
+            val layer = mapLayers.get(name) as TiledMapTileLayer
+            val xOffsetRaw:String? = layer.properties.get("yOffset", null, String::class.java)
+            val yOffset = (xOffsetRaw?.toFloat()?: 0f) * INV_SCALE
+            return layer to yOffset
+        }
+        val ground = getLayer("layer0")
+        mapWidth = ground.first.width
+        mapHeight = ground.first.height
+        layers.add(ground)
+        layers.add(getLayer("layer1"))
+        layers.add(getLayer("layer2"))
+        layers.add(getLayer("layer3"))
+        // we want need to check top layers first
+        layers.reverse()
     }
 
     private fun toggle(): Boolean {
@@ -81,34 +96,30 @@ class DebugTileSelectRenderer : BaseSystem(), SubRenderer {
         var csx = if (cs.x < 0) cs.x -2 else cs.x
         var csy = if (cs.y < 0) cs.y -1 else cs.y
 
-        val hOffset = tileHeight * 3
+        val hOffset = tileHeight
         // we offset the mouse pos down, so it matches the actual map tile position
         csy -= hOffset
 
         val t1x = csx.toInt()/2
         val t1y = csy.toInt()*2
-//        val t2x = t1x
-//        val t2y = t1y -1
-//        val t3x = t1x +1
-//        val t3y = t1y -1
-//        val t4x = t1x
-//        val t4y = t1y -2
-        renderer.begin(ShapeRenderer.ShapeType.Filled)
-        renderer.color = Color.YELLOW
-        renderer.color.a = .33f
-        renderer.rect(t1x * 2f, t1y / 2f + hOffset, 2f, 1f)
-        renderer.color = Color.MAGENTA
-        renderer.color.a = .75f
-        // tile as far as map is concerned, base tiles have height of 16 pixels
-        renderTile(t1x, t1y, -tileHeight, false)
-        renderer.color = Color.GREEN
-        renderer.color.a = .75f
-        renderTile(t1x, t1y, hOffset -tileHeight)
-        renderer.end()
-        renderer.color = Color.RED
-        renderer.begin(ShapeRenderer.ShapeType.Line)
-        renderTilePoly(t1x, t1y, hOffset -tileHeight)
-        renderer.end()
+
+        val t2x = t1x
+        val t2y = t1y -1
+
+        val t3x = t1x +1
+        val t3y = t1y -1
+
+        val t4x = t1x
+        val t4y = t1y +1
+
+        val t5x = t1x +1
+        val t5y = t1y +1
+        drawFancyTile(t4x, t4y, hOffset)
+        drawFancyTile(t5x, t5y, hOffset)
+        drawFancyTile(t1x, t1y, hOffset)
+        drawFancyTile(t2x, t2y, hOffset)
+        drawFancyTile(t3x, t3y, hOffset)
+        // check middle tile first, then corner tiles
 //        renderTile(t2x, t2y, 0f)
 //        renderTile(t3x, t3y, 0f)
 //        renderTile(t4x, t4y, 0f)
@@ -127,9 +138,28 @@ class DebugTileSelectRenderer : BaseSystem(), SubRenderer {
 //        }
     }
 
+    private fun drawFancyTile(tx: Int, ty: Int, hOffset: Float) {
+        renderer.begin(ShapeRenderer.ShapeType.Filled)
+//        renderer.color = Color.YELLOW
+//        renderer.color.a = .33f
+//        renderer.rect(tx * 2f, ty / 2f + hOffset, 2f, 1f)
+        renderer.color = Color.MAGENTA
+        renderer.color.a = .75f
+        // tile as far as map is concerned, base tiles have height of 16 pixels
+        renderTile(tx, ty, -tileHeight, false)
+        renderer.color = Color.GREEN
+        renderer.color.a = .75f
+        renderTile(tx, ty, hOffset -tileHeight)
+        renderer.end()
+        renderer.color = Color.RED
+        renderer.begin(ShapeRenderer.ShapeType.Line)
+        renderTilePoly(tx, ty, hOffset -tileHeight)
+        renderer.end()
+    }
+
     val tmpPos = Vector2()
     private fun calculateTilePos(x:Int, y:Int, hOffset:Float = 0f): Vector2 {
-        val wy = (y % layerHeight + layerHeight) % layerHeight
+        val wy = (y % mapHeight + mapHeight) % mapHeight
         val offsetX = if ((wy % 2 == 1)) 1f else 0f
         val tx = x * 2f - offsetX
         // layer offset * INV_SCALE
