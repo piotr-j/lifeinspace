@@ -12,6 +12,8 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.graphics.glutils.FrameBuffer
 import com.badlogic.gdx.graphics.glutils.ShaderProgram
 import io.piotrjastrzebski.lis.game.processors.debug.DebugBox2dRenderer
+import io.piotrjastrzebski.lis.game.processors.debug.DebugTileGridRenderer
+import io.piotrjastrzebski.lis.game.processors.debug.DebugTileSelectRenderer
 import io.piotrjastrzebski.lis.screens.WIRE_GAME_CAM
 import io.piotrjastrzebski.lis.utils.Assets
 import io.piotrjastrzebski.lis.utils.Resizing
@@ -26,6 +28,8 @@ class Renderer() : BaseSystem(), Resizing {
     @Wire lateinit var vb: ViewBounds
     @Wire lateinit var mapRenderer: MapRenderer
     @Wire lateinit var box2dRenderer: DebugBox2dRenderer
+    @Wire lateinit var tileGrid: DebugTileGridRenderer
+    @Wire lateinit var tileSelect: DebugTileSelectRenderer
     @Wire lateinit var keybinds: KeyBindings
     var fbo: FrameBuffer? = null
     val fboRegion = TextureRegion()
@@ -33,7 +37,7 @@ class Renderer() : BaseSystem(), Resizing {
 
     override fun initialize() {
         keybinds.register(Input.Keys.F12, {toggleRadialShader()}, {false})
-        shader = assets.radialShader
+//        shader = assets.radialShader
         Gdx.app.log("Renderer", "F12 - toggle radial shader")
     }
 
@@ -56,6 +60,8 @@ class Renderer() : BaseSystem(), Resizing {
         // TODO render entities or whatever
         batch.end()
         box2dRenderer.render()
+        tileGrid.render()
+        tileSelect.render()
         fbo!!.end()
 
         batch.shader = shader
