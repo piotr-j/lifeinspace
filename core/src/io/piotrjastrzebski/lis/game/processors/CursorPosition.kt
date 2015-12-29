@@ -4,6 +4,7 @@ import com.artemis.BaseSystem
 import com.artemis.annotations.Wire
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.OrthographicCamera
+import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.math.Vector3
 import io.piotrjastrzebski.lis.screens.WIRE_GAME_CAM
@@ -31,5 +32,6 @@ class CursorPosition : BaseSystem() {
         wy = y
         while (wy > MAP_HEIGHT) wy -= MAP_HEIGHT
         while (wy < 0) wy += MAP_HEIGHT
+        // TODO figure out a way to get distorted coordinates
     }
 }
