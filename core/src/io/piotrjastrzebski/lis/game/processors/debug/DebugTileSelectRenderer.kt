@@ -1,7 +1,6 @@
 package io.piotrjastrzebski.lis.game.processors.debug
 
 import com.artemis.BaseSystem
-import com.artemis.ComponentMapper
 import com.artemis.annotations.Wire
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
@@ -10,15 +9,11 @@ import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer
-import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.math.Polygon
 import com.badlogic.gdx.math.Vector2
-import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer
 import com.badlogic.gdx.utils.Array
 import io.piotrjastrzebski.lis.INV_SCALE
-import io.piotrjastrzebski.lis.game.components.Transform
 import io.piotrjastrzebski.lis.game.processors.*
-import io.piotrjastrzebski.lis.game.processors.physics.Physics
 import io.piotrjastrzebski.lis.screens.WIRE_GAME_CAM
 import io.piotrjastrzebski.lis.utils.Assets
 
@@ -95,15 +90,19 @@ class DebugTileSelectRenderer : BaseSystem(), SubRenderer {
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA)
         renderer.projectionMatrix = camera.combined
         renderer.setColor(0f, 1f, 0f, .5f)
-        findSelected()
+        val wrapper = getCellAt(cs.x, cs.y) ?: return
+        drawFancyTile(wrapper.x, wrapper.y, wrapper.elevation)
     }
     /** x, y offsets from center tile to corner tiles*/
     val tileOffsets = intArrayOf(0, 0, 0, -1, 1, -1, 0, 1, 1, 1)
 
-    fun findSelected() {
-        layers@ for ((layer, offset) in layers) {
-            var csx = if (cs.x < 0) cs.x - 2 else cs.x
-            var csy = if (cs.y < 0) cs.y - 1 else cs.y
+    val cellWrapper = CellWrapper()
+
+    public fun getCellAt(qx:Float, qy:Float): CellWrapper? {
+        cellWrapper.reset()
+        for ((layer, offset) in layers) {
+            var csx = if (qx < 0) qx - 2 else qx
+            var csy = if (qy < 0) qy - 1 else qy
             val hOffset = offset + tileHeight
             // we offset the mouse pos down, so it matches the actual map tile position
             csy -= hOffset
@@ -112,14 +111,17 @@ class DebugTileSelectRenderer : BaseSystem(), SubRenderer {
             for (id in 0..tileOffsets.lastIndex step 2) {
                 val x = tx + tileOffsets[id]
                 val y = ty + tileOffsets[id + 1]
-                val cell = checkTile(x, y, hOffset, layer)
-                if (cell != null) {
-                    // TODO do something with the cell
-                    drawFancyTile(x, y, hOffset)
-                    break@layers
-                }
+                val cell = checkTile(x, y, hOffset, layer) ?: continue
+
+                cellWrapper.x = x
+                cellWrapper.y = y
+                cellWrapper.elevation = hOffset
+                cellWrapper.cell = cell
+                cellWrapper.layer = layer
+                return cellWrapper
             }
         }
+        return null
     }
 
     private fun drawFancyTile(tx: Int, ty: Int, hOffset: Float) {
@@ -177,6 +179,20 @@ class DebugTileSelectRenderer : BaseSystem(), SubRenderer {
         val pos = calculateTilePos(x, y, hOffset)
         tile.setPosition(pos.x, pos.y)
         renderer.polygon(tile.transformedVertices)
+    }
+
+    public class CellWrapper() {
+        var x = -1
+        var y = -1
+        var elevation = 0f
+        var layer: TiledMapTileLayer? = null
+        var cell: TiledMapTileLayer.Cell? = null
+        fun reset() {
+            x = -1
+            y = -1
+            layer = null
+            cell = null
+        }
     }
 
     override fun processSystem() { }
