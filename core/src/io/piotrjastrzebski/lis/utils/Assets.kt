@@ -15,6 +15,7 @@ class Assets(val pixelScaleFactor: Float) {
     public lateinit var skin: Skin
     public lateinit var map: TiledMap
     public lateinit var radialShader: ShaderProgram
+    public lateinit var tilesModel: Model
     private val SKIN_PATH = "gui/uiskin.json"
     private val MODEL_TILES = "models/tiles.g3dj"
     private val MAP_PATH = "staggered.tmx"
@@ -53,6 +54,7 @@ class Assets(val pixelScaleFactor: Float) {
         skin = assetManager.get(SKIN_PATH, Skin::class.java)
         map = assetManager.get(MAP_PATH, TiledMap::class.java)
         radialShader = assetManager.get(RADIAL_SHADER_PATH, ShaderProgram::class.java)
+        tilesModel = assetManager.get(MODEL_TILES, Model::class.java)
     }
 
     fun dispose() {
