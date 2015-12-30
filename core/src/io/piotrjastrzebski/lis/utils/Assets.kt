@@ -1,6 +1,7 @@
 package io.piotrjastrzebski.lis.utils
 
 import com.badlogic.gdx.assets.AssetManager
+import com.badlogic.gdx.graphics.g3d.Model
 import com.badlogic.gdx.graphics.glutils.ShaderProgram
 import com.badlogic.gdx.maps.tiled.TiledMap
 import com.badlogic.gdx.maps.tiled.TmxMapLoader
@@ -15,6 +16,7 @@ class Assets(val pixelScaleFactor: Float) {
     public lateinit var map: TiledMap
     public lateinit var radialShader: ShaderProgram
     private val SKIN_PATH = "gui/uiskin.json"
+    private val MODEL_TILES = "models/tiles.g3dj"
     private val MAP_PATH = "staggered.tmx"
     private val RADIAL_SHADER_PATH = "shaders/radial"
     private val assetManager: AssetManager
@@ -23,11 +25,16 @@ class Assets(val pixelScaleFactor: Float) {
         assetManager = AssetManager()
         assetManager.setLoader(TiledMap::class.java, TmxMapLoader())
         assetManager.setLoader(ShaderProgram::class.java, ShaderLoader())
-        assetManager.load<Skin>(SKIN_PATH, Skin::class.java)
-        assetManager.load<TiledMap>(MAP_PATH, TiledMap::class.java)
-        assetManager.load<ShaderProgram>(RADIAL_SHADER_PATH, ShaderProgram::class.java)
-        // TODO load assets and stuff
+        assetManager.load<Skin>(SKIN_PATH)
+        assetManager.load<TiledMap>(MAP_PATH)
+        assetManager.load<ShaderProgram>(RADIAL_SHADER_PATH)
+        assetManager.load<Model>(MODEL_TILES)
     }
+
+    // so we dont have to write
+    // assetManager.load<Model>(MODEL_TILES, Model::class.java)
+    // this is essentially a macro
+    inline fun <reified T: Any> AssetManager.load(path: String) = this.load<T>(path, T::class.java)
 
     private var loaded = false
 
