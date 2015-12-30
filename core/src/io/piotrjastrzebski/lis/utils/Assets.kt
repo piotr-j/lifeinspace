@@ -1,6 +1,9 @@
 package io.piotrjastrzebski.lis.utils
 
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.assets.AssetManager
+import com.badlogic.gdx.graphics.GL20
+import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g3d.Model
 import com.badlogic.gdx.graphics.glutils.ShaderProgram
 import com.badlogic.gdx.maps.tiled.TiledMap
@@ -55,6 +58,16 @@ class Assets(val pixelScaleFactor: Float) {
         map = assetManager.get(MAP_PATH, TiledMap::class.java)
         radialShader = assetManager.get(RADIAL_SHADER_PATH, ShaderProgram::class.java)
         tilesModel = assetManager.get(MODEL_TILES, Model::class.java)
+
+        val textures = com.badlogic.gdx.utils.Array<Texture>()
+        assetManager.getAll(Texture::class.java, textures)
+        for (texture in textures) {
+            texture.bind()
+            // so stuff doenst look like ass when angled
+            // TODO probably need to get the max value from somewhere
+            Gdx.gl.glTexParameterf(GL20.GL_TEXTURE_2D, GL20.GL_TEXTURE_MAX_ANISOTROPY_EXT, 16f)
+        }
+
     }
 
     fun dispose() {
