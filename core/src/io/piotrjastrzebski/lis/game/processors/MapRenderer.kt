@@ -38,6 +38,7 @@ class MapRenderer() : BaseSystem(), SubRenderer {
     override fun render() {
         mapRenderer.setView(camera.combined, vb.x, vb.y, vb.width, vb.height)
         mapRenderer.render()
+//        mapRenderer.render(intArrayOf(1))
     }
 
     override fun processSystem() {}

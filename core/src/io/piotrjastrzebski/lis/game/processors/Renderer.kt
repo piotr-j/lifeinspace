@@ -31,6 +31,7 @@ class Renderer() : BaseSystem(), Resizing {
     @Wire lateinit var tileGrid: DebugTileGridRenderer
     @Wire lateinit var tileSelect: DebugTileSelectRenderer
     @Wire lateinit var keybinds: KeyBindings
+    @Wire lateinit var modelRenderer: ModelRenderer
     var fbo: FrameBuffer? = null
     val fboRegion = TextureRegion()
     var shader: ShaderProgram? = null
@@ -50,18 +51,21 @@ class Renderer() : BaseSystem(), Resizing {
     }
 
     override fun processSystem() {
+        batch.projectionMatrix = camera.combined
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT or GL20.GL_DEPTH_BUFFER_BIT)
         fbo!!.begin()
         Gdx.gl.glClearColor(0f, 0f, 0f, 1f)
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT or GL20.GL_DEPTH_BUFFER_BIT)
 
-        batch.projectionMatrix = camera.combined
-        batch.begin()
-        mapRenderer.render()
+//        batch.begin()
+//        mapRenderer.render()
         // TODO render entities or whatever
-        batch.end()
-        box2dRenderer.render()
-        tileGrid.render()
-        tileSelect.render()
+//        batch.end()
+//        box2dRenderer.render()
+//        tileGrid.render()
+//        tileSelect.render()
+
+        modelRenderer.render()
         fbo!!.end()
 
         batch.shader = shader
@@ -73,7 +77,7 @@ class Renderer() : BaseSystem(), Resizing {
 
     override fun resize(width: Int, height: Int) {
         fbo?.dispose()
-        fbo = FrameBuffer(Pixmap.Format.RGBA8888, width, height, false)
+        fbo = FrameBuffer(Pixmap.Format.RGBA8888, width, height, true)
         fboRegion.setRegion(fbo!!.colorBufferTexture)
         fboRegion.flip(false, true)
 

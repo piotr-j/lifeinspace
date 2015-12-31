@@ -52,6 +52,7 @@ class GameScreen(game: LiSGame) : BaseScreen(game) {
 
         config.setSystem(Renderer())
         config.setSystem(MapRenderer())
+        config.setSystem(ModelRenderer())
         config.setSystem(DebugTileGridRenderer())
         config.setSystem(DebugTileSelectRenderer())
         config.setSystem(DebugBox2dRenderer())
