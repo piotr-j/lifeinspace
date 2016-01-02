@@ -14,7 +14,7 @@ import com.badlogic.gdx.graphics.glutils.ShaderProgram
 import io.piotrjastrzebski.lis.game.processors.debug.DebugBox2dRenderer
 import io.piotrjastrzebski.lis.game.processors.debug.DebugTileGridRenderer
 import io.piotrjastrzebski.lis.game.processors.debug.DebugTileSelectRenderer
-import io.piotrjastrzebski.lis.screens.WIRE_GAME_CAM
+import io.piotrjastrzebski.lis.screens.WIRE_FBO_CAM
 import io.piotrjastrzebski.lis.utils.Assets
 import io.piotrjastrzebski.lis.utils.Resizing
 
@@ -22,7 +22,7 @@ import io.piotrjastrzebski.lis.utils.Resizing
  * Created by PiotrJ on 22/12/15.
  */
 class Renderer() : BaseSystem(), Resizing {
-    @Wire(name = WIRE_GAME_CAM) lateinit var camera: OrthographicCamera
+    @Wire(name = WIRE_FBO_CAM) lateinit var camera: OrthographicCamera
     @Wire lateinit var assets: Assets
     @Wire lateinit var batch: SpriteBatch
     @Wire lateinit var vb: ViewBounds
@@ -57,6 +57,7 @@ class Renderer() : BaseSystem(), Resizing {
         Gdx.gl.glClearColor(0f, 0f, 0f, 1f)
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT or GL20.GL_DEPTH_BUFFER_BIT)
 
+        modelRenderer.render()
 //        batch.begin()
 //        mapRenderer.render()
         // TODO render entities or whatever
@@ -65,7 +66,6 @@ class Renderer() : BaseSystem(), Resizing {
 //        tileGrid.render()
 //        tileSelect.render()
 
-        modelRenderer.render()
         fbo!!.end()
 
         batch.shader = shader
@@ -73,6 +73,7 @@ class Renderer() : BaseSystem(), Resizing {
         batch.draw(fboRegion, camera.position.x - vb.width/2, camera.position.y - vb.height/2, vb.width, vb.height)
         batch.end()
         batch.shader = null
+//        modelRenderer.render()
     }
 
     override fun resize(width: Int, height: Int) {

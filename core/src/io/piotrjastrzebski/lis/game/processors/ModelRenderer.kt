@@ -49,9 +49,24 @@ class ModelRenderer() : BaseSystem(), SubRenderer {
         cam.far = 300f
         cam.update()
 
+//        camera.position.x = -10f
+        camera.near = 1f
+        camera.far = 300f
+        camera.position.x = 0f
+        camera.position.y = -15f
+        camera.position.z = 10f
+        camera.lookAt(0f, 0f, 0f)
+//        camera.position.x = 0f
+//        camera.position.y = 0f
+//        camera.position.z = 0f
+//        camera.lookAt(10f, -10f, 10f)
+        camera.update()
+
         camController = CameraInputController(camera)
+//        camController = CameraInputController(cam)
         val multi = Gdx.input.inputProcessor as InputMultiplexer
         multi.addProcessor(0, camController)
+//        Gdx.input.inputProcessor = camController
 
         environment.set(ColorAttribute(ColorAttribute.AmbientLight, 0.4f, 0.4f, 0.4f, 1f))
         environment.add(DirectionalLight().set(0.8f, 0.8f, 0.8f, 1f, -0.8f, -0.2f))
@@ -82,7 +97,7 @@ class ModelRenderer() : BaseSystem(), SubRenderer {
 
         val layers = assets.map.layers
         val quat = Quaternion()
-        var zOffset = 0f
+        var zOffset = 1f
         val unit = Math.sqrt(2.0).toFloat()
         for (layer in layers) {
             layer as TiledMapTileLayer

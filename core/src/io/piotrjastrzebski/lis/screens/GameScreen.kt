@@ -3,7 +3,11 @@ package io.piotrjastrzebski.lis.screens
 import com.artemis.InvocationStrategy
 import com.artemis.World
 import com.artemis.WorldConfiguration
+import com.badlogic.gdx.graphics.OrthographicCamera
+import com.badlogic.gdx.utils.viewport.ExtendViewport
 import io.piotrjastrzebski.lis.LiSGame
+import io.piotrjastrzebski.lis.VP_HEIGHT
+import io.piotrjastrzebski.lis.VP_WIDTH
 import io.piotrjastrzebski.lis.game.processors.*
 import io.piotrjastrzebski.lis.game.processors.CameraFollow
 import io.piotrjastrzebski.lis.game.processors.debug.DebugBox2dRenderer
@@ -20,16 +24,22 @@ import io.piotrjastrzebski.lis.utils.Resizing
  */
 public const val WIRE_GAME_CAM = "game-cam"
 public const val WIRE_GAME_VP = "game-vp"
+public const val WIRE_FBO_CAM = "fbo-cam"
+public const val WIRE_FBO_VP = "fbo-vp"
 public const val WIRE_GUI_CAM = "gui-cam"
 public const val WIRE_GUI_VP = "gui-vp"
 
 class GameScreen(game: LiSGame) : BaseScreen(game) {
     val world:World
+    protected val fboCamera = OrthographicCamera()
+    protected val fboViewport = ExtendViewport(VP_WIDTH, VP_HEIGHT, fboCamera)
 
     init {
         var config = WorldConfiguration()
         config.register(WIRE_GAME_CAM, gameCamera)
         config.register(WIRE_GAME_VP, gameViewport)
+        config.register(WIRE_FBO_CAM, fboCamera)
+        config.register(WIRE_FBO_VP, fboViewport)
         config.register(WIRE_GUI_CAM, guiCamera)
         config.register(WIRE_GUI_VP, guiViewport)
         config.register(shapeRenderer)
@@ -72,6 +82,7 @@ class GameScreen(game: LiSGame) : BaseScreen(game) {
 
     override fun resize(width: Int, height: Int) {
         super.resize(width, height)
+        fboViewport.update(width, height, false)
         // TODO filter, forEach?
         for (system in world.systems) {
             if (system is Resizing) system.resize(width, height)
