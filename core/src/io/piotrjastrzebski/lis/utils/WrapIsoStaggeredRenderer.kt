@@ -7,6 +7,8 @@ import com.badlogic.gdx.maps.tiled.TiledMap
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer
 import com.badlogic.gdx.maps.tiled.renderers.BatchTiledMapRenderer
 import com.badlogic.gdx.maps.tiled.tiles.AnimatedTiledMapTile
+import kotlin.ranges.downTo
+import kotlin.text.toFloat
 
 /**
  * Created by EvilEntity on 27/12/2015.

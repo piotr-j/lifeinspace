@@ -16,6 +16,9 @@ import io.piotrjastrzebski.lis.INV_SCALE
 import io.piotrjastrzebski.lis.game.processors.*
 import io.piotrjastrzebski.lis.screens.WIRE_GAME_CAM
 import io.piotrjastrzebski.lis.utils.Assets
+import kotlin.collections.lastIndex
+import kotlin.ranges.step
+import kotlin.text.toFloat
 
 /**
  * Created by PiotrJ on 25/12/15.
