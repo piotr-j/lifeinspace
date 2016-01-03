@@ -11,10 +11,13 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.graphics.glutils.FrameBuffer
 import com.badlogic.gdx.graphics.glutils.ShaderProgram
+import io.piotrjastrzebski.lis.VP_HEIGHT
+import io.piotrjastrzebski.lis.VP_WIDTH
 import io.piotrjastrzebski.lis.game.processors.debug.DebugBox2dRenderer
 import io.piotrjastrzebski.lis.game.processors.debug.DebugTileGridRenderer
 import io.piotrjastrzebski.lis.game.processors.debug.DebugTileSelectRenderer
 import io.piotrjastrzebski.lis.screens.WIRE_FBO_CAM
+import io.piotrjastrzebski.lis.screens.WIRE_GUI_CAM
 import io.piotrjastrzebski.lis.utils.Assets
 import io.piotrjastrzebski.lis.utils.Resizing
 
@@ -22,7 +25,7 @@ import io.piotrjastrzebski.lis.utils.Resizing
  * Created by PiotrJ on 22/12/15.
  */
 class Renderer() : BaseSystem(), Resizing {
-    @Wire(name = WIRE_FBO_CAM) lateinit var camera: OrthographicCamera
+    @Wire(name = WIRE_GUI_CAM) lateinit var guiCam: OrthographicCamera
     @Wire lateinit var assets: Assets
     @Wire lateinit var batch: SpriteBatch
     @Wire lateinit var vb: ViewBounds
@@ -51,7 +54,7 @@ class Renderer() : BaseSystem(), Resizing {
     }
 
     override fun processSystem() {
-        batch.projectionMatrix = camera.combined
+//        batch.projectionMatrix = camera.combined
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT or GL20.GL_DEPTH_BUFFER_BIT)
         fbo!!.begin()
         Gdx.gl.glClearColor(0f, 0f, 0f, 1f)
@@ -68,9 +71,11 @@ class Renderer() : BaseSystem(), Resizing {
 
         fbo!!.end()
 
+        // since we just render a fullscreen quad, we can use gui camera
+        batch.projectionMatrix = guiCam.combined
         batch.shader = shader
         batch.begin()
-        batch.draw(fboRegion, camera.position.x - vb.width/2, camera.position.y - vb.height/2, vb.width, vb.height)
+        batch.draw(fboRegion, 0f, 0f, guiCam.viewportWidth, guiCam.viewportHeight)
         batch.end()
         batch.shader = null
 //        modelRenderer.render()
