@@ -3,6 +3,7 @@ package io.piotrjastrzebski.lis
 import com.badlogic.gdx.Game
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
+import com.badlogic.gdx.physics.bullet.Bullet
 import io.piotrjastrzebski.lis.screens.LoadingScreen
 import io.piotrjastrzebski.lis.utils.Assets
 
@@ -20,6 +21,7 @@ class LiSGame(val bridge: PlatformBridge) : Game() {
     internal val renderer: ShapeRenderer by lazy { ShapeRenderer()}
 
     override fun create() {
+        Bullet.init()
         setScreen(LoadingScreen(this))
     }
 
