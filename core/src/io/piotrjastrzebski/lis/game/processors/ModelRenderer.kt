@@ -50,6 +50,7 @@ class ModelRenderer() : BaseSystem(), SubRenderer {
         cam.update()
 
 //        camera.position.x = -10f
+        // TODO this looks kinda fine, but we want perspective cam for debug purposes
         camera.near = 1f
         camera.far = 300f
         camera.position.x = 0f
@@ -113,17 +114,11 @@ class ModelRenderer() : BaseSystem(), SubRenderer {
                     //                val id = "tile"
                     val instance:ModelInstance = ModelInstance(tiles, id)
                     if (instance.nodes.size == 0) continue
-                    val node = instance.getNode(id)
-
-                    instance.transform.set(node.globalTransform)
-                    node.translation.set(0f, 0f, 0f)
-                    node.scale.set(1f, 1f, 1f)
-                    node.rotation.set(Vector3.Z, -90f)
-                    node.rotation.mul(quat.set(Vector3.Z, pair.second + 45))
-                    //                node.rotation.mul(quat.set(Vector3.X, -45f))
+                    instance.transform.rotate(Vector3.X, 90f)
+                    instance.transform.rotate(Vector3.Y, pair.second - 45)
+                    instance.transform.setTranslation(x*unit - offsetX, y*unit/2, zOffset)
                     instance.calculateTransforms()
 
-                    instance.transform.setToTranslation(x*unit - offsetX, y*unit/2, zOffset)
                     instances.add(instance)
                 }
             }
