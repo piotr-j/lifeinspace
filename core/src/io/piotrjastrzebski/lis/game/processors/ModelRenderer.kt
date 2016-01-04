@@ -1,7 +1,9 @@
 package io.piotrjastrzebski.lis.game.processors
 
-import com.artemis.BaseSystem
+import com.artemis.Aspect
+import com.artemis.ComponentMapper
 import com.artemis.annotations.Wire
+import com.artemis.systems.IteratingSystem
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.InputMultiplexer
 import com.badlogic.gdx.graphics.OrthographicCamera
@@ -12,13 +14,16 @@ import com.badlogic.gdx.graphics.g3d.ModelInstance
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight
 import com.badlogic.gdx.graphics.g3d.utils.CameraInputController
+import io.piotrjastrzebski.lis.game.components.Culled
+import io.piotrjastrzebski.lis.game.components.RenderableModel
 import io.piotrjastrzebski.lis.screens.WIRE_GAME_CAM
 
 /**
  * Created by PiotrJ on 22/12/15.
  */
-class ModelRenderer() : BaseSystem(), SubRenderer {
+class ModelRenderer() : IteratingSystem(Aspect.all(RenderableModel::class.java).exclude(Culled::class.java)), SubRenderer {
     @Wire(name = WIRE_GAME_CAM) lateinit var camera: OrthographicCamera
+    @Wire lateinit var mRenderableModel: ComponentMapper<RenderableModel>
 
     val modelBatch = ModelBatch()
     val environment = Environment()
@@ -60,8 +65,6 @@ class ModelRenderer() : BaseSystem(), SubRenderer {
 
         environment.set(ColorAttribute(ColorAttribute.AmbientLight, 0.4f, 0.4f, 0.4f, 1f))
         environment.add(DirectionalLight().set(0.8f, 0.8f, 0.8f, 1f, -0.8f, -0.2f))
-
-        isEnabled = false
     }
 
     override fun render() {
@@ -73,11 +76,10 @@ class ModelRenderer() : BaseSystem(), SubRenderer {
 
     override fun begin() {
         // clear instances, add all the crap
-//        instances.size = 0
-
+        instances.size = 0
     }
 
-    override fun processSystem() {
-        // todo gather instances from entities
+    override fun process(entityId: Int) {
+        instances.add(mRenderableModel.get(entityId).instance)
     }
 }

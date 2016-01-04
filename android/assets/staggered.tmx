@@ -38,7 +38,7 @@
   </tile>
   <tile id="6">
    <properties>
-    <property name="dir'" value="sw"/>
+    <property name="dir" value="sw"/>
     <property name="id" value="tile-corner"/>
    </properties>
   </tile>
