@@ -60,6 +60,7 @@ class GameScreen(game: LiSGame) : BaseScreen(game) {
         config.setSystem(CameraUpdate())
         config.setSystem(ViewBounds())
 
+        config.setSystem(MapParser())
         config.setSystem(Renderer())
         config.setSystem(MapRenderer())
         config.setSystem(ModelRenderer())

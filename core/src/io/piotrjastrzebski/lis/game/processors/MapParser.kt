@@ -3,12 +3,11 @@ package io.piotrjastrzebski.lis.game.processors
 import com.artemis.BaseSystem
 import com.artemis.annotations.Wire
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.graphics.g3d.ModelInstance
 import com.badlogic.gdx.maps.tiled.TiledMapTile
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer
-import com.badlogic.gdx.physics.box2d.BodyDef.BodyType
-import io.piotrjastrzebski.lis.game.components.BoxDef
-import io.piotrjastrzebski.lis.game.components.Transform
-import io.piotrjastrzebski.lis.game.components.physics.BodyDef
+import com.badlogic.gdx.math.Vector3
+import com.badlogic.gdx.utils.IntMap
 import io.piotrjastrzebski.lis.utils.Assets
 
 /**
@@ -16,32 +15,63 @@ import io.piotrjastrzebski.lis.utils.Assets
  */
 class MapParser() : BaseSystem() {
     @Wire lateinit var assets: Assets
+    @Wire lateinit var renderer: ModelRenderer
 
     override fun initialize() {
-        // eh, on insert map?
-        val walls = assets.map.layers.get("walls") as TiledMapTileLayer
-        for (x in 0..walls.width) {
-            for (y in 0..walls.height) {
-                val cell: TiledMapTileLayer.Cell? = walls.getCell(x, y) ?: continue
-                val tile: TiledMapTile? = cell!!.tile ?: continue
-                createTile(tile!!, x, y)
+        val tiles = assets.tilesModel
+
+        // fixme this map is shit
+        val tileIdToNameRot = IntMap<Pair<String, Float>>()
+        val tileSet = assets.map.tileSets.getTileSet(0)
+        fun dirToRot(dir:String):Float {
+            when (dir) {
+                "se" -> return 0f
+                "ne" -> return 90f
+                "nw" -> return 180f
+                "sw" -> return 270f
+                else -> return 0f
             }
         }
 
-        isEnabled = false
-    }
+        for (id in 0..tileSet.size() -1) {
+            val props = tileSet.getTile(id)?.properties ?: continue
+            if (props.containsKey("id")) {
+                val tileId = props.get("id", String::class.java)
+                // TODO need to make sure which one is default rot
+                val tileDir = props.get("dir", "sw", String::class.java)
+                tileIdToNameRot.put(id, tileId to dirToRot(tileDir))
+                Gdx.app.log("", "${tileIdToNameRot.get(id)}")
+            }
+        }
 
-    private fun createTile(tile: TiledMapTile, x: Int, y: Int) {
-        Gdx.app.log("MapParser", "Tiled ${tile.id} at $x, $y")
-        // TODO eventually, we want to render only base layer and replace other tiles with entities
-        val e = world.createEntity().edit()
-        val trans = e.create(Transform::class.java)
-        trans.xy.set(x.toFloat(), y.toFloat())
-        trans.bounds.setSize(1f, 1f)
-        val def = e.create(BodyDef::class.java)
-        def.def.type = BodyType.StaticBody
-        val box = e.create(BoxDef::class.java)
-        box.size(.5f, .5f)
+        val layers = assets.map.layers
+        var zOffset = 1f
+        val unit = Math.sqrt(2.0).toFloat()
+        for (layer in layers) {
+            layer as TiledMapTileLayer
+            for (x in 0..layer.width) {
+                for (y in 0..layer.height) {
+                    val offsetX = if ((y % 2 == 1)) unit/2 else 0f
+                    val cell: TiledMapTileLayer.Cell? = layer.getCell(x, y) ?: continue
+                    val tile: TiledMapTile? = cell!!.tile ?: continue
+                    // TODO get id from tile
+                    if (!tileIdToNameRot.containsKey(tile!!.id)) continue
+                    val pair = tileIdToNameRot.get(tile.id)
+                    val id = pair.first
+                    //                val id = "tile"
+                    val instance = ModelInstance(tiles, id)
+                    if (instance.nodes.size == 0) continue
+                    instance.transform.rotate(Vector3.X, 90f)
+                    instance.transform.rotate(Vector3.Y, pair.second - 45)
+                    instance.transform.setTranslation(x*unit - offsetX, y*unit/2, zOffset)
+                    instance.calculateTransforms()
+                    // todo create entity
+                    renderer.instances.add(instance)
+                }
+            }
+            zOffset+=.25f
+        }
+        isEnabled = false
     }
 
     override fun processSystem() {}
