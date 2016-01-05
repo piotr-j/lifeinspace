@@ -34,14 +34,12 @@ class ModelRenderer() : IteratingSystem(Aspect.all(RenderableModel::class.java).
     var debugCamera = PerspectiveCamera(67f, Gdx.graphics.width.toFloat(), Gdx.graphics.height.toFloat())
     var camController = CameraInputController(debugCamera)
 
-    var isDebug = false
+    var debug = false
+    public lateinit var currentCamera: Camera
     private fun toggleDebug(): Boolean {
-        isDebug = !isDebug
-        if (isDebug) {
-            camController.camera = debugCamera
-        } else {
-            camController.camera = camera
-        }
+        debug = !debug
+        currentCamera = if (debug) debugCamera else camera
+        camController.camera = currentCamera
         return true
     }
 
@@ -50,6 +48,7 @@ class ModelRenderer() : IteratingSystem(Aspect.all(RenderableModel::class.java).
 
     override fun initialize() {
         keybinds.register(Input.Keys.F4, {toggleDebug()}, {false})
+        currentCamera = camera
 
         debugCamera.position.set(0f, -10f, 10f)
         debugCamera.lookAt(0f, 0f, 0f)
@@ -76,7 +75,7 @@ class ModelRenderer() : IteratingSystem(Aspect.all(RenderableModel::class.java).
         camera.lookAt(0f, 0f, 0f)
         camera.update()
 
-        camController.camera = camera
+        camController.camera = currentCamera
 
         val multi = Gdx.input.inputProcessor as InputMultiplexer
         multi.addProcessor(0, camController)
@@ -87,9 +86,9 @@ class ModelRenderer() : IteratingSystem(Aspect.all(RenderableModel::class.java).
 
     override fun render() {
         camController.update()
-        modelBatch.begin(if (isDebug) debugCamera else camera)
+        modelBatch.begin(currentCamera)
         modelBatch.render<ModelInstance>(instances, environment)
-        if (isDebug) {
+        if (debug) {
             debugFrustumInstance.transform.set(camera.view).inv()
             modelBatch.render(debugFrustumInstance, environment)
         }
