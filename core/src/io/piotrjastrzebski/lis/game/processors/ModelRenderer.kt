@@ -90,14 +90,7 @@ class ModelRenderer() : IteratingSystem(Aspect.all(RenderableModel::class.java).
         modelBatch.begin(if (isDebug) debugCamera else camera)
         modelBatch.render<ModelInstance>(instances, environment)
         if (isDebug) {
-            // update pos etc
-//            debugFrustumInstance.transform.set(camera.view)
-            debugFrustumInstance.transform.idt()
-            // TODO rotation is broken, fix it
-            //            debugFrustumInstance.transform.setToLookAt(camera.direction, tmpBase.set(camera.up).scl(-1f)) // why is this scale required?
-            debugFrustumInstance.transform.translate(camera.position)
-            debugFrustumInstance.calculateTransforms()
-            // TODO we should probably make a new model on resize
+            debugFrustumInstance.transform.set(camera.view).inv()
             modelBatch.render(debugFrustumInstance, environment)
         }
         modelBatch.end()
