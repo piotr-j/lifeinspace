@@ -14,17 +14,17 @@ import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight
 import com.badlogic.gdx.graphics.g3d.utils.CameraInputController
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder
 import com.badlogic.gdx.math.MathUtils
-import com.badlogic.gdx.math.Matrix4
 import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.physics.bullet.collision.*
 import com.badlogic.gdx.physics.bullet.dynamics.btDiscreteDynamicsWorld
 import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody
 import com.badlogic.gdx.physics.bullet.dynamics.btSequentialImpulseConstraintSolver
-import com.badlogic.gdx.physics.bullet.linearmath.btMotionState
 import com.badlogic.gdx.utils.ArrayMap
 import com.badlogic.gdx.utils.Disposable
 import io.piotrjastrzebski.lis.game.components.Culled
 import io.piotrjastrzebski.lis.game.components.RenderableModel
+import io.piotrjastrzebski.lis.game.processors.physics.BulletContactListener
+import io.piotrjastrzebski.lis.game.processors.physics.BulletMotionState
 import io.piotrjastrzebski.lis.screens.WIRE_GAME_CAM
 import io.piotrjastrzebski.lis.utils.Resizing
 
@@ -67,37 +67,14 @@ class ModelRenderer() : IteratingSystem(Aspect.all(RenderableModel::class.java).
     val constraintSolver: btSequentialImpulseConstraintSolver
     val dynamicsWorld: btDiscreteDynamicsWorld
 
-    internal inner class MyContactListener : ContactListener() {
-        // note this is magic with static stuff, automagically added to bullet
-        // note only one method can be overridden, jni magic
-        override fun onContactAdded(userValue0: Int, partId0: Int, index0: Int, match0: Boolean,
-                           userValue1: Int, partId1: Int, index1: Int, match1: Boolean): Boolean {
-            if (match0)
-                (instances.get(userValue0).materials.get(0).get(ColorAttribute.Diffuse) as ColorAttribute).color.set(Color.WHITE)
-            if (match1)
-                (instances.get(userValue1).materials.get(0).get(ColorAttribute.Diffuse) as ColorAttribute).color.set(Color.WHITE)
-            return true
-        }
-    }
-    private val contactListener: MyContactListener
-
-    internal class MyMotionState : btMotionState() {
-        lateinit var transform: Matrix4
-        override fun getWorldTransform (worldTrans: Matrix4) {
-            worldTrans.set(transform);
-        }
-
-        override fun setWorldTransform (worldTrans: Matrix4) {
-            transform.set(worldTrans);
-        }
-    }
+    private val contactListener: BulletContactListener
 
     internal class GameObject(model: Model, node: String, constructionInfo: btRigidBody.btRigidBodyConstructionInfo) : ModelInstance(model, node), Disposable {
         val body: btRigidBody
-        val motionState: MyMotionState
+        val motionState: BulletMotionState
 
         init {
-            motionState = MyMotionState()
+            motionState = BulletMotionState()
             motionState.transform = transform
             body = btRigidBody(constructionInfo)
             body.motionState = motionState
@@ -145,7 +122,7 @@ class ModelRenderer() : IteratingSystem(Aspect.all(RenderableModel::class.java).
         constraintSolver = btSequentialImpulseConstraintSolver()
         dynamicsWorld = btDiscreteDynamicsWorld(dispatcher, broadPhase, constraintSolver, collisionConfig)
         dynamicsWorld.gravity = Vector3(0f, 0f, -3f)
-        contactListener = MyContactListener()
+        contactListener = BulletContactListener()
 
         val mb = ModelBuilder()
         mb.begin();
