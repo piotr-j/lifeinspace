@@ -16,39 +16,63 @@ class KeyBindings : BaseSystem(), InputHandler {
 
     private var modifiers = 0
 
-    override fun initialize() {
+    override fun initialize() { }
 
-    }
+    internal inner class Mapping(val owner:Any, val action: Function1<Int, Boolean>)
 
-    val keyToFunDown = IntMap<Array<Function1<Int, Boolean>>>()
-    val keyToFunUp = IntMap<Array<Function1<Int, Boolean>>>()
+    private val keyToFunDown = IntMap<Array<Mapping>>()
+    private val keyToFunUp = IntMap<Array<Mapping>>()
 
-    fun register(keys: IntArray, cbDown: (key: Int) -> Boolean, cbUp: (key: Int) -> Boolean) {
+    fun register(owner: Any, keys: IntArray, cbDown: (key: Int) -> Boolean, cbUp: (key: Int) -> Boolean) {
         // todo priority?
         for (key in keys) {
-            register(key, cbDown, cbUp)
+            register(owner, key, cbDown, cbUp)
         }
     }
 
-    fun register(key: Int, cbDown: (key: Int) -> Boolean, cbUp: (key: Int) -> Boolean) {
-        var downs: Array<(Int) -> Boolean>? = keyToFunDown.get(key, null)
+    fun register(owner: Any, key: Int, cbDown: (key: Int) -> Boolean, cbUp: (key: Int) -> Boolean) {
+        var downs: Array<Mapping>? = keyToFunDown.get(key, null)
         if (downs == null) {
             downs = Array()
             keyToFunDown.put(key, downs)
         }
-        downs.add(cbDown)
-        var ups: Array<(Int) -> Boolean>? = keyToFunUp.get(key, null)
+        downs.add(Mapping(owner, cbDown))
+        var ups: Array<Mapping>? = keyToFunUp.get(key, null)
         if (ups == null) {
             ups = Array()
             keyToFunUp.put(key, ups)
         }
-        ups.add(cbUp)
+        ups.add(Mapping(owner, cbUp))
     }
 
-    fun deregister(keys: IntArray, cbDown: (Int) -> Boolean, cbUp: (Int) -> Boolean) {
+    fun unregister(owner: Any, keys: IntArray) {
         for (key in keys) {
-            keyToFunDown.get(key, null)?.removeValue(cbDown, true)
-            keyToFunUp.get(key, null)?.removeValue(cbUp, true)
+            unregister(owner, key)
+        }
+    }
+
+    fun unregister(owner: Any, key: Int) {
+        var downs: Array<Mapping>? = keyToFunDown.get(key, null)
+        if (downs != null) {
+            val it = downs.iterator()
+            while(it.hasNext()) {
+                val next = it.next()
+                if (next.owner == owner) {
+                    it.remove()
+                    break
+                }
+            }
+        }
+        var ups: Array<Mapping>? = keyToFunUp.get(key, null)
+        if (ups != null) {
+            val it = ups.iterator()
+            while(it.hasNext()) {
+                val next = it.next()
+                if (next.owner == owner) {
+                    it.remove()
+                    break
+                }
+            }
         }
     }
 
@@ -68,8 +92,8 @@ class KeyBindings : BaseSystem(), InputHandler {
 
     private fun modKeyDown(keyCode: Int): Boolean {
         if (keyToFunDown.containsKey(keyCode)) {
-            for (function in keyToFunDown.get(keyCode)) {
-                if (function.invoke(keyCode)) break
+            for (mapping in keyToFunDown.get(keyCode)) {
+                if (mapping.action.invoke(keyCode)) break
             }
         }
         return false
@@ -87,8 +111,8 @@ class KeyBindings : BaseSystem(), InputHandler {
 
     private fun modKeyUp(keyCode: Int): Boolean {
         if (keyToFunUp.containsKey(keyCode)) {
-            for (function in keyToFunUp.get(keyCode)) {
-                if (function.invoke(keyCode)) break
+            for (mapping in keyToFunUp.get(keyCode)) {
+                if (mapping.action.invoke(keyCode)) break
             }
         }
         return false

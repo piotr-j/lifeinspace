@@ -24,7 +24,7 @@ class CameraFollow : IteratingSystem(Aspect.all(Transform::class.java, CameraFol
     @Wire lateinit var mTransform: ComponentMapper<Transform>
 
     override fun initialize() {
-        keybinds.register(intArrayOf(Keys.F6), {toggle()}, {false})
+        keybinds.register(this, intArrayOf(Keys.F6), {toggle()}, {false})
     }
 
     private fun toggle(): Boolean {

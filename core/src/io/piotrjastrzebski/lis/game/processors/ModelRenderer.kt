@@ -186,7 +186,7 @@ class ModelRenderer() : IteratingSystem(Aspect.all(RenderableModel::class.java).
     }
 
     override fun initialize() {
-        keybinds.register(Input.Keys.F4, {toggleDebug()}, {false})
+        keybinds.register(this, Input.Keys.F4, {toggleDebug()}, {false})
         currentCamera = camera
 
         debugCamera.position.set(0f, -10f, 10f)

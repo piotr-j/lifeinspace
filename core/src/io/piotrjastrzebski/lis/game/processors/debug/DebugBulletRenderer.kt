@@ -19,7 +19,7 @@ class DebugBulletRenderer : BaseSystem(), SubRenderer {
     var render = false
 
     override fun initialize() {
-        keybinds.register(Input.Keys.F3, {toggle()}, {false})
+        keybinds.register(this, Input.Keys.F3, {toggle()}, {false})
         debugDrawer = DebugDrawer()
         debugDrawer.debugMode = btIDebugDraw.DebugDrawModes.DBG_DrawWireframe
         modelRenderer.dynamicsWorld.debugDrawer = debugDrawer

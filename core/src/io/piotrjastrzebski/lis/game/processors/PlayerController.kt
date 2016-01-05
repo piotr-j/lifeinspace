@@ -33,8 +33,8 @@ class PlayerController : IteratingSystem(Aspect.all(Player::class.java, Transfor
     val cbDown: (Int) -> Boolean = { keyDown(it)}
     val cbUp: (Int) -> Boolean = { keyUp(it)}
     override fun initialize() {
-        keybinds.register(moveKeys, cbDown, cbUp)
-        keybinds.register(Keys.F1, {toggle()}, {false})
+        keybinds.register(this, moveKeys, cbDown, cbUp)
+        keybinds.register(this, Keys.F1, {toggle()}, {false})
         physics.register(this)
 //        isEnabled = false
     }
@@ -73,9 +73,9 @@ class PlayerController : IteratingSystem(Aspect.all(Player::class.java, Transfor
         moveX = 0
         moveY = 0
         if (isEnabled) {
-            keybinds.register(moveKeys, cbDown, cbUp)
+            keybinds.register(this, moveKeys, cbDown, cbUp)
         } else {
-            keybinds.deregister(moveKeys, cbDown, cbUp)
+            keybinds.unregister(this, moveKeys)
         }
         Gdx.app.log("PlayerMove", "IsEnabled: $isEnabled")
         return false

@@ -30,7 +30,7 @@ class DebugTileGridRenderer : BaseSystem(), SubRenderer {
     val indices = shortArrayOf(0, 1, 3, 1, 2, 3)
 
     override fun initialize() {
-        keybinds.register(Input.Keys.F10, {toggle()}, {false})
+        keybinds.register(this, Input.Keys.F10, {toggle()}, {false})
         isEnabled = false
     }
 

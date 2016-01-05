@@ -61,7 +61,7 @@ class DebugTileSelectRenderer : BaseSystem(), SubRenderer {
     var layers = Array<Pair<TiledMapTileLayer, Float>>()
 
     override fun initialize() {
-        keybinds.register(Input.Keys.F11, {toggle()}, {false})
+        keybinds.register(this, Input.Keys.F11, {toggle()}, {false})
         isEnabled = false
         val mapLayers = assets.map.layers
         fun getLayer(name: String): Pair<TiledMapTileLayer, Float> {

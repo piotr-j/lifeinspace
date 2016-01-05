@@ -21,7 +21,7 @@ class DebugCameraController : BaseSystem() {
     val cbUp: (Int) -> Boolean = { keyUp(it)}
     override fun initialize() {
 //        keybinds.register(moveKeys, cbDown, cbUp)
-        keybinds.register(Keys.F1, {toggle()}, {false})
+        keybinds.register(this, Keys.F1, {toggle()}, {false})
         isEnabled = false
     }
 
@@ -32,9 +32,9 @@ class DebugCameraController : BaseSystem() {
         moveX = 0
         moveY = 0
         if (isEnabled) {
-            keybinds.register(moveKeys, cbDown, cbUp)
+            keybinds.register(this, moveKeys, cbDown, cbUp)
         } else {
-            keybinds.deregister(moveKeys, cbDown, cbUp)
+            keybinds.unregister(this, moveKeys)
         }
         Gdx.app.log("DebugCameraMove", "IsEnabled: $isEnabled")
         return false

@@ -42,7 +42,7 @@ class Renderer() : BaseSystem(), Resizing {
     var shader: ShaderProgram? = null
 
     override fun initialize() {
-        keybinds.register(Input.Keys.F12, {toggleRadialShader()}, {false})
+        keybinds.register(this, Input.Keys.F12, {toggleRadialShader()}, {false})
 //        shader = assets.radialShader
         Gdx.app.log("Renderer", "F12 - toggle radial shader")
     }

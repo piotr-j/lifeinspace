@@ -23,7 +23,7 @@ class DebugBox2dRenderer : BaseSystem(), SubRenderer {
     var renderer = Box2DDebugRenderer()
     var render = true
     override fun initialize() {
-        keybinds.register(Input.Keys.F5, {toggle()}, {false})
+        keybinds.register(this, Input.Keys.F5, {toggle()}, {false})
         isEnabled = false
     }
 
