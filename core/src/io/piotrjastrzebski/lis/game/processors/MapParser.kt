@@ -58,6 +58,9 @@ class MapParser() : BaseSystem() {
                     instance.transform.setTranslation(x*TILE_SIZE + offsetX, y*TILE_SIZE/2, zOffset)
                     instance.calculateTransforms()
                     // TODO add some other tile data
+                    // lets play with bullet in here, then extract it
+                    // get col shape from models, col-full, etc
+                    // col-corner-in-a, b for inner corner
                     val edit = world.createAndEdit()
                     edit.create(RenderableModel::class.java).instance = instance
                 }

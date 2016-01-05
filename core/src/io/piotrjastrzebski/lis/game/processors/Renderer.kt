@@ -14,6 +14,7 @@ import com.badlogic.gdx.graphics.glutils.ShaderProgram
 import io.piotrjastrzebski.lis.VP_HEIGHT
 import io.piotrjastrzebski.lis.VP_WIDTH
 import io.piotrjastrzebski.lis.game.processors.debug.DebugBox2dRenderer
+import io.piotrjastrzebski.lis.game.processors.debug.DebugBulletRenderer
 import io.piotrjastrzebski.lis.game.processors.debug.DebugTileGridRenderer
 import io.piotrjastrzebski.lis.game.processors.debug.DebugTileSelectRenderer
 import io.piotrjastrzebski.lis.screens.WIRE_FBO_CAM
@@ -28,13 +29,14 @@ class Renderer() : BaseSystem(), Resizing {
     @Wire(name = WIRE_GUI_CAM) lateinit var guiCam: OrthographicCamera
     @Wire lateinit var assets: Assets
     @Wire lateinit var batch: SpriteBatch
-    @Wire lateinit var vb: ViewBounds
-    @Wire lateinit var mapRenderer: MapRenderer
-    @Wire lateinit var box2dRenderer: DebugBox2dRenderer
-    @Wire lateinit var tileGrid: DebugTileGridRenderer
-    @Wire lateinit var tileSelect: DebugTileSelectRenderer
+//    @Wire lateinit var vb: ViewBounds
+//    @Wire lateinit var mapRenderer: MapRenderer
+//    @Wire lateinit var box2dRenderer: DebugBox2dRenderer
+//    @Wire lateinit var tileGrid: DebugTileGridRenderer
+//    @Wire lateinit var tileSelect: DebugTileSelectRenderer
     @Wire lateinit var keybinds: KeyBindings
     @Wire lateinit var modelRenderer: ModelRenderer
+    @Wire lateinit var bulletDebug: DebugBulletRenderer
     var fbo: FrameBuffer? = null
     val fboRegion = TextureRegion()
     var shader: ShaderProgram? = null
@@ -61,6 +63,7 @@ class Renderer() : BaseSystem(), Resizing {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT or GL20.GL_DEPTH_BUFFER_BIT)
 
         modelRenderer.render()
+        bulletDebug.render()
 //        batch.begin()
 //        mapRenderer.render()
         // TODO render entities or whatever

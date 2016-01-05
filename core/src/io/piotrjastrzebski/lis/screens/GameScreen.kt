@@ -10,10 +10,7 @@ import io.piotrjastrzebski.lis.VP_HEIGHT
 import io.piotrjastrzebski.lis.VP_WIDTH
 import io.piotrjastrzebski.lis.game.processors.*
 import io.piotrjastrzebski.lis.game.processors.CameraFollow
-import io.piotrjastrzebski.lis.game.processors.debug.DebugBox2dRenderer
-import io.piotrjastrzebski.lis.game.processors.debug.DebugCameraController
-import io.piotrjastrzebski.lis.game.processors.debug.DebugTileGridRenderer
-import io.piotrjastrzebski.lis.game.processors.debug.DebugTileSelectRenderer
+import io.piotrjastrzebski.lis.game.processors.debug.*
 import io.piotrjastrzebski.lis.game.processors.physics.BodyInit
 import io.piotrjastrzebski.lis.game.processors.physics.BodyPositionWrap
 import io.piotrjastrzebski.lis.game.processors.physics.Physics
@@ -47,7 +44,7 @@ class GameScreen(game: LiSGame) : BaseScreen(game) {
         config.register(assets)
 
 //        config.setSystem(MapParser())
-        config.setSystem(PlayerSpawner())
+//        config.setSystem(PlayerSpawner())
 
         config.setSystem(CursorPosition())
         config.setSystem(Physics())
@@ -55,7 +52,7 @@ class GameScreen(game: LiSGame) : BaseScreen(game) {
         config.setSystem(BodyPositionWrap())
         config.setSystem(PlayerController())
         config.setSystem(DebugCameraController())
-        config.setSystem(CameraFollow())
+//        config.setSystem(CameraFollow())
         // NOTE stuff that changes camera must be before CameraUpdate
         config.setSystem(CameraUpdate())
         config.setSystem(ViewBounds())
@@ -64,9 +61,10 @@ class GameScreen(game: LiSGame) : BaseScreen(game) {
         config.setSystem(Renderer())
         config.setSystem(MapRenderer())
         config.setSystem(ModelRenderer())
-        config.setSystem(DebugTileGridRenderer())
-        config.setSystem(DebugTileSelectRenderer())
-        config.setSystem(DebugBox2dRenderer())
+        config.setSystem(DebugBulletRenderer())
+//        config.setSystem(DebugTileGridRenderer())
+//        config.setSystem(DebugTileSelectRenderer())
+//        config.setSystem(DebugBox2dRenderer())
         val kbs = KeyBindings()
         multiplexer.addProcessor(kbs)
         config.setSystem(kbs)
