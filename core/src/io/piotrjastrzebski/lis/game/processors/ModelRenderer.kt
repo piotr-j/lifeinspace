@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.*
 import com.badlogic.gdx.graphics.g3d.*
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight
+import com.badlogic.gdx.graphics.g3d.model.MeshPart
 import com.badlogic.gdx.graphics.g3d.utils.CameraInputController
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder
 import com.badlogic.gdx.math.MathUtils
@@ -19,6 +20,7 @@ import com.badlogic.gdx.physics.bullet.collision.*
 import com.badlogic.gdx.physics.bullet.dynamics.btDiscreteDynamicsWorld
 import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody
 import com.badlogic.gdx.physics.bullet.dynamics.btSequentialImpulseConstraintSolver
+import com.badlogic.gdx.utils.Array
 import com.badlogic.gdx.utils.ArrayMap
 import com.badlogic.gdx.utils.Disposable
 import io.piotrjastrzebski.lis.game.components.Culled
@@ -26,6 +28,7 @@ import io.piotrjastrzebski.lis.game.components.RenderableModel
 import io.piotrjastrzebski.lis.game.processors.physics.BulletContactListener
 import io.piotrjastrzebski.lis.game.processors.physics.BulletMotionState
 import io.piotrjastrzebski.lis.screens.WIRE_GAME_CAM
+import io.piotrjastrzebski.lis.utils.Assets
 import io.piotrjastrzebski.lis.utils.Resizing
 
 /**
@@ -35,6 +38,7 @@ class ModelRenderer() : IteratingSystem(Aspect.all(RenderableModel::class.java).
     @Wire(name = WIRE_GAME_CAM) lateinit var camera: OrthographicCamera
     @Wire lateinit var mRenderableModel: ComponentMapper<RenderableModel>
     @Wire lateinit var keybinds: KeyBindings
+    @Wire lateinit var assets: Assets
 
     internal val GROUND_FLAG = 1 shl 8
     internal val OBJECT_FLAG = 1 shl 9
@@ -93,7 +97,7 @@ class ModelRenderer() : IteratingSystem(Aspect.all(RenderableModel::class.java).
                     shape.calculateLocalInertia(mass, localInertia)
                 else
                     localInertia.set(0f, 0f, 0f)
-                this.constructionInfo = btRigidBody.btRigidBodyConstructionInfo(mass, null, shape, localInertia)
+                constructionInfo = btRigidBody.btRigidBodyConstructionInfo(mass, null, shape, localInertia)
             }
 
             fun construct(): GameObject {
@@ -152,7 +156,7 @@ class ModelRenderer() : IteratingSystem(Aspect.all(RenderableModel::class.java).
     fun spawn() {
         val obj = constructors.values[1].construct()
         obj.transform.setFromEulerAngles(MathUtils.random(360f), MathUtils.random(360f), MathUtils.random(360f))
-        obj.transform.trn(MathUtils.random(-2.5f, 2.5f), MathUtils.random(-2.5f, 2.5f), 6f)
+        obj.transform.trn(MathUtils.random(-1.5f, 1.5f), MathUtils.random(-1.5f, 1.5f), 6f)
         obj.body.proceedToTransform(obj.transform)
         obj.body.userValue = debugInstances.size
         obj.body.collisionFlags = obj.body.collisionFlags or btCollisionObject.CollisionFlags.CF_CUSTOM_MATERIAL_CALLBACK
@@ -162,7 +166,53 @@ class ModelRenderer() : IteratingSystem(Aspect.all(RenderableModel::class.java).
         obj.body.contactCallbackFilter = GROUND_FLAG
     }
 
+    fun createStuff(name: String, model: Model, meshParts: Array<MeshPart>) {
+        val meshPart = model.getNode("$name-col").parts.first().meshPart
+        meshParts.clear()
+        meshParts.add(meshPart)
+        constructors.put(name, GameObject.Constructor(model, name, btBvhTriangleMeshShape(meshParts), 0f))
+    }
+
+    val meshParts = Array<MeshPart>()
+    public fun createTile(name: String, pos:Vector3, yRot: Float) {
+        var constructor:GameObject.Constructor? = constructors.get(name)
+        if (constructor == null) {
+            meshParts.clear()
+            // apparently this works somehow
+            meshParts.add(assets.tilesModel.getNode(name).parts.first().meshPart)
+            constructor = GameObject.Constructor(assets.tilesModel, name, btBvhTriangleMeshShape(meshParts), 0f)
+            constructors.put(name, constructor)
+        }
+        val obj = constructor.construct()
+        obj.transform.trn(pos)
+        obj.transform.rotate(Vector3.Z, yRot)
+        obj.body.proceedToTransform(obj.transform)
+        obj.body.userValue = debugInstances.size
+        obj.body.collisionFlags = obj.body.collisionFlags or btCollisionObject.CollisionFlags.CF_CUSTOM_MATERIAL_CALLBACK
+        debugInstances.add(obj)
+        dynamicsWorld.addRigidBody(obj.body)
+    }
+
     override fun initialize() {
+        // neat works!
+        createStuff("tile-pyramid", assets.tilesModel, meshParts)
+
+        meshParts.clear()
+        // apparently this works somehow
+        meshParts.add(assets.tilesModel.getNode("tile-corner-in-col").parts.first().meshPart)
+        constructors.put("tile-corner-in", GameObject.Constructor(assets.tilesModel, "tile-corner-in", btBvhTriangleMeshShape(meshParts), 0f))
+
+        val obj = constructors.get("tile-corner-in").construct()
+        obj.transform.trn(0f, 0f, 3f)
+        obj.body.proceedToTransform(obj.transform)
+        obj.body.userValue = debugInstances.size
+        obj.body.collisionFlags = obj.body.collisionFlags or btCollisionObject.CollisionFlags.CF_CUSTOM_MATERIAL_CALLBACK
+        debugInstances.add(obj)
+        dynamicsWorld.addRigidBody(obj.body)
+//        obj.body.contactCallbackFlag = OBJECT_FLAG
+//        obj.body.contactCallbackFilter = GROUND_FLAG
+
+
         keybinds.register(this, Input.Keys.F4, {toggleDebug()}, {false})
         currentCamera = camera
 

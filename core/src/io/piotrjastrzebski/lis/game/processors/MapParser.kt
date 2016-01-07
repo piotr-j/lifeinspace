@@ -8,6 +8,7 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer
 import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.utils.IntMap
 import io.piotrjastrzebski.lis.game.components.RenderableModel
+import io.piotrjastrzebski.lis.game.components.physics.BulletBodyDef
 import io.piotrjastrzebski.lis.game.createAndEdit
 import io.piotrjastrzebski.lis.utils.Assets
 
@@ -18,6 +19,7 @@ val TILE_HEIGHT = .25f
 /** tiles are 1x1, but rotated 45 deg */
 val TILE_SIZE = Math.sqrt(2.0).toFloat()
 class MapParser() : BaseSystem() {
+    @Wire lateinit var modelRenderer: ModelRenderer
     @Wire lateinit var assets: Assets
 
     val tileIdToTileData = IntMap<TileData>()
@@ -36,7 +38,7 @@ class MapParser() : BaseSystem() {
                 tileIdToTileData.put(id, TileData(tileId, dirToRot(tileDir)))
             }
         }
-
+        val v3 = Vector3()
         var zOffset = 0f
         for (layer in assets.map.layers) {
             layer as TiledMapTileLayer
@@ -48,12 +50,13 @@ class MapParser() : BaseSystem() {
                     if (!tileIdToTileData.containsKey(tile.id)) continue
                     val tileData = tileIdToTileData.get(tile.id)
                     // TODO is this model stuff correct?
+                    /*
                     val instance = ModelInstance(tiles, tileData.nodeId)
                     if (instance.nodes.size == 0) continue
                     // face the camera
-                    instance.transform.rotate(Vector3.X, 90f)
+//                    instance.transform.rotate(Vector3.X, 90f)
                     // rotate left so its on the corner+
-                    instance.transform.rotate(Vector3.Y, tileData.dir - 45)
+                    instance.transform.rotate(Vector3.Z, tileData.dir - 45)
                     // tiles are spaced at size in the x, but size/2 on the y, so they overlap
                     instance.transform.setTranslation(x*TILE_SIZE + offsetX, y*TILE_SIZE/2, zOffset)
                     instance.calculateTransforms()
@@ -63,6 +66,12 @@ class MapParser() : BaseSystem() {
                     // col-corner-in-a, b for inner corner
                     val edit = world.createAndEdit()
                     edit.create(RenderableModel::class.java).instance = instance
+                    val colData = tiles.getNode("${tileData.nodeId}-col") ?: continue
+                    val bulletDef = edit.create(BulletBodyDef::class.java)
+                    bulletDef.type = BulletBodyDef.Shape.MESH
+                    */
+                    v3.set(x*TILE_SIZE + offsetX, y*TILE_SIZE/2, zOffset)
+                    modelRenderer.createTile(tileData.nodeId, v3, tileData.dir - 45)
                 }
             }
             zOffset += TILE_HEIGHT
