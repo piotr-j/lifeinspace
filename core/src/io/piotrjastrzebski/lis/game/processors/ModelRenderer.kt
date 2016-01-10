@@ -27,6 +27,7 @@ import io.piotrjastrzebski.lis.game.components.Culled
 import io.piotrjastrzebski.lis.game.components.RenderableModel
 import io.piotrjastrzebski.lis.game.processors.physics.BulletContactListener
 import io.piotrjastrzebski.lis.game.processors.physics.BulletMotionState
+import io.piotrjastrzebski.lis.game.processors.physics.Physics
 import io.piotrjastrzebski.lis.screens.WIRE_GAME_CAM
 import io.piotrjastrzebski.lis.utils.Assets
 import io.piotrjastrzebski.lis.utils.Resizing
@@ -39,6 +40,7 @@ class ModelRenderer() : IteratingSystem(Aspect.all(RenderableModel::class.java).
     @Wire lateinit var mRenderableModel: ComponentMapper<RenderableModel>
     @Wire lateinit var keybinds: KeyBindings
     @Wire lateinit var assets: Assets
+    @Wire lateinit var physics: Physics
 
     internal val GROUND_FLAG = 1 shl 8
     internal val OBJECT_FLAG = 1 shl 9
@@ -64,14 +66,6 @@ class ModelRenderer() : IteratingSystem(Aspect.all(RenderableModel::class.java).
     private lateinit var debugFrustumModel: Model
     private lateinit var debugFrustumInstance: ModelInstance
     private lateinit var testModel: Model
-
-    val collisionConfig: btCollisionConfiguration;
-    val dispatcher: btDispatcher
-    val broadPhase: btDbvtBroadphase
-    val constraintSolver: btSequentialImpulseConstraintSolver
-    val dynamicsWorld: btDiscreteDynamicsWorld
-
-    private val contactListener: BulletContactListener
 
     internal class GameObject(model: Model, node: String, constructionInfo: btRigidBody.btRigidBodyConstructionInfo) : ModelInstance(model, node), Disposable {
         val body: btRigidBody
@@ -117,40 +111,9 @@ class ModelRenderer() : IteratingSystem(Aspect.all(RenderableModel::class.java).
 
     private var constructors = ArrayMap<String, GameObject.Constructor>(String::class.java, GameObject.Constructor::class.java)
 
-    private var ground: GameObject
+    private lateinit var ground: GameObject
 
     init {
-        collisionConfig = btDefaultCollisionConfiguration()
-        dispatcher = btCollisionDispatcher(collisionConfig)
-        broadPhase = btDbvtBroadphase()
-        constraintSolver = btSequentialImpulseConstraintSolver()
-        dynamicsWorld = btDiscreteDynamicsWorld(dispatcher, broadPhase, constraintSolver, collisionConfig)
-        dynamicsWorld.gravity = Vector3(0f, 0f, -3f)
-        contactListener = BulletContactListener()
-
-        val mb = ModelBuilder()
-        mb.begin();
-        mb.node().id = "ground";
-        mb.part("ground", GL20.GL_TRIANGLES,
-                (VertexAttributes.Usage.Position or VertexAttributes.Usage.Normal).toLong(),
-                Material(ColorAttribute.createDiffuse(Color.RED)))
-        .box(10f, 10f, 1f);
-        mb.node().id = "sphere";
-        mb.part(
-                "sphere", GL20.GL_TRIANGLES,
-                (VertexAttributes.Usage.Position or VertexAttributes.Usage.Normal).toLong(),
-                Material(ColorAttribute.createDiffuse(Color.GREEN)))
-                .sphere(1f, 1f, 1f, 10, 10);
-        testModel = mb.end();
-
-        constructors.put("ground", GameObject.Constructor(testModel, "ground", btBoxShape(Vector3(5f, 5f, .5f)), 0f))
-        constructors.put("sphere", GameObject.Constructor(testModel, "sphere", btSphereShape(0.5f), 1f))
-
-        ground = constructors.get("ground").construct()
-        dynamicsWorld.addRigidBody(ground.body)
-        ground.body.contactCallbackFlag = GROUND_FLAG
-        ground.body.contactCallbackFilter = 0
-        debugInstances.add(ground)
     }
 
     fun spawn() {
@@ -161,7 +124,7 @@ class ModelRenderer() : IteratingSystem(Aspect.all(RenderableModel::class.java).
         obj.body.userValue = debugInstances.size
         obj.body.collisionFlags = obj.body.collisionFlags or btCollisionObject.CollisionFlags.CF_CUSTOM_MATERIAL_CALLBACK
         debugInstances.add(obj)
-        dynamicsWorld.addRigidBody(obj.body)
+        physics.addRigidBody(obj.body)
         obj.body.contactCallbackFlag = OBJECT_FLAG
         obj.body.contactCallbackFilter = GROUND_FLAG
     }
@@ -190,10 +153,35 @@ class ModelRenderer() : IteratingSystem(Aspect.all(RenderableModel::class.java).
         obj.body.userValue = debugInstances.size
         obj.body.collisionFlags = obj.body.collisionFlags or btCollisionObject.CollisionFlags.CF_CUSTOM_MATERIAL_CALLBACK
         debugInstances.add(obj)
-        dynamicsWorld.addRigidBody(obj.body)
+        physics.addRigidBody(obj.body)
     }
 
     override fun initialize() {
+        val mb = ModelBuilder()
+        mb.begin();
+        mb.node().id = "ground";
+        mb.part("ground", GL20.GL_TRIANGLES,
+                (VertexAttributes.Usage.Position or VertexAttributes.Usage.Normal).toLong(),
+                Material(ColorAttribute.createDiffuse(Color.RED)))
+                .box(10f, 10f, 1f);
+        mb.node().id = "sphere";
+        mb.part(
+                "sphere", GL20.GL_TRIANGLES,
+                (VertexAttributes.Usage.Position or VertexAttributes.Usage.Normal).toLong(),
+                Material(ColorAttribute.createDiffuse(Color.GREEN)))
+                .sphere(1f, 1f, 1f, 10, 10);
+        testModel = mb.end();
+
+        constructors.put("ground", GameObject.Constructor(testModel, "ground", btBoxShape(Vector3(5f, 5f, .5f)), 0f))
+        constructors.put("sphere", GameObject.Constructor(testModel, "sphere", btSphereShape(0.5f), 1f))
+
+        ground = constructors.get("ground").construct()
+        physics.addRigidBody(ground.body)
+        ground.body.contactCallbackFlag = GROUND_FLAG
+        ground.body.contactCallbackFilter = 0
+        debugInstances.add(ground)
+
+
         // neat works!
         createStuff("tile-pyramid", assets.tilesModel, meshParts)
 
@@ -208,7 +196,7 @@ class ModelRenderer() : IteratingSystem(Aspect.all(RenderableModel::class.java).
         obj.body.userValue = debugInstances.size
         obj.body.collisionFlags = obj.body.collisionFlags or btCollisionObject.CollisionFlags.CF_CUSTOM_MATERIAL_CALLBACK
         debugInstances.add(obj)
-        dynamicsWorld.addRigidBody(obj.body)
+        physics.addRigidBody(obj.body)
 //        obj.body.contactCallbackFlag = OBJECT_FLAG
 //        obj.body.contactCallbackFilter = GROUND_FLAG
 
@@ -253,8 +241,6 @@ class ModelRenderer() : IteratingSystem(Aspect.all(RenderableModel::class.java).
     private var spawnTimer = 0f;
 
     override fun render() {
-        val dt = Math.min(1f / 30f, world.delta);
-        dynamicsWorld.stepSimulation(dt, 5, 1f/60f)
         spawnTimer -= world.delta
         if (spawnTimer < 0) {
             spawn()
@@ -324,9 +310,6 @@ class ModelRenderer() : IteratingSystem(Aspect.all(RenderableModel::class.java).
     override fun dispose() {
         debugFrustumModel.dispose()
         modelBatch.dispose()
-
-        dispatcher.dispose()
-        collisionConfig.dispose()
 
     }
 

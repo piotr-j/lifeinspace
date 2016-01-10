@@ -9,9 +9,8 @@ import io.piotrjastrzebski.lis.LiSGame
 import io.piotrjastrzebski.lis.VP_HEIGHT
 import io.piotrjastrzebski.lis.VP_WIDTH
 import io.piotrjastrzebski.lis.game.processors.*
-import io.piotrjastrzebski.lis.game.processors.CameraFollow
 import io.piotrjastrzebski.lis.game.processors.debug.*
-import io.piotrjastrzebski.lis.game.processors.physics.BodyInit
+import io.piotrjastrzebski.lis.game.processors.physics.BulletBodyInit
 import io.piotrjastrzebski.lis.game.processors.physics.BodyPositionWrap
 import io.piotrjastrzebski.lis.game.processors.physics.Physics
 import io.piotrjastrzebski.lis.utils.Resizing
@@ -48,7 +47,7 @@ class GameScreen(game: LiSGame) : BaseScreen(game) {
 
         config.setSystem(CursorPosition())
         config.setSystem(Physics())
-        config.setSystem(BodyInit())
+        config.setSystem(BulletBodyInit())
         config.setSystem(BodyPositionWrap())
         config.setSystem(PlayerController())
         config.setSystem(DebugCameraController())
@@ -59,6 +58,7 @@ class GameScreen(game: LiSGame) : BaseScreen(game) {
 
         config.setSystem(Renderer())
         config.setSystem(MapRenderer())
+        config.setSystem(ModelInit())
         config.setSystem(ModelRenderer())
         config.setSystem(DebugBulletRenderer())
         config.setSystem(MapParser())

@@ -10,21 +10,18 @@ import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.math.Vector2
 import io.piotrjastrzebski.lis.game.components.Player
 import io.piotrjastrzebski.lis.game.components.Transform
-import io.piotrjastrzebski.lis.game.components.physics.Body
-import io.piotrjastrzebski.lis.game.minusAssign
-import io.piotrjastrzebski.lis.game.processors.physics.FixedUpdatable
+import io.piotrjastrzebski.lis.game.components.physics.BulletBody
 import io.piotrjastrzebski.lis.game.processors.physics.Physics
-import io.piotrjastrzebski.lis.game.timesAssign
 import io.piotrjastrzebski.lis.screens.WIRE_GAME_CAM
 
 /**
  * Created by EvilEntity on 22/12/2015.
  */
-class PlayerController : IteratingSystem(Aspect.all(Player::class.java, Transform::class.java, Body::class.java)), FixedUpdatable {
+class PlayerController : IteratingSystem(Aspect.all(Player::class.java, Transform::class.java, BulletBody::class.java)) {
     @Wire(name = WIRE_GAME_CAM) lateinit var camera: OrthographicCamera
     @Wire lateinit var keybinds: KeyBindings
     @Wire lateinit var mTransform: ComponentMapper<Transform>
-    @Wire lateinit var mBody: ComponentMapper<Body>
+    @Wire lateinit var mBody: ComponentMapper<BulletBody>
     @Wire lateinit var physics: Physics
 
     val moveKeys = intArrayOf(
@@ -35,7 +32,6 @@ class PlayerController : IteratingSystem(Aspect.all(Player::class.java, Transfor
     override fun initialize() {
         keybinds.register(this, moveKeys, cbDown, cbUp)
         keybinds.register(this, Keys.F1, {toggle()}, {false})
-        physics.register(this)
 //        isEnabled = false
     }
 
@@ -49,21 +45,7 @@ class PlayerController : IteratingSystem(Aspect.all(Player::class.java, Transfor
         if (moveY < 0) tmp.y = -scale
         // limit so we don't move faster moving diagonally
         tmp.limit(scale)
-        val trans = mTransform.get(entityId)
-        val body = mBody.get(entityId).body!!
-        trans.xy.set(body.position).sub(trans.bounds.width/2f, trans.bounds.height/2f)
-    }
 
-    override fun fixedUpdate() {
-        if (tmp.isZero) return
-        val ids = getSubscription().entities
-        for(i in 0..ids.size()) {
-            val entityId = ids.get(i)
-            val body = mBody.get(entityId).body!!
-            tmp -= body.linearVelocity
-            tmp *= body.mass
-            body.applyLinearImpulse(tmp, body.worldCenter, true)
-        }
     }
 
     private fun toggle(): Boolean {

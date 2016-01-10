@@ -7,13 +7,16 @@ import com.badlogic.gdx.Input
 import com.badlogic.gdx.physics.bullet.DebugDrawer
 import com.badlogic.gdx.physics.bullet.linearmath.btIDebugDraw
 import io.piotrjastrzebski.lis.game.processors.*
+import io.piotrjastrzebski.lis.game.processors.physics.Physics
 
 /**
+ * Note: this is very slow
  * Created by PiotrJ on 25/12/15.
  */
 class DebugBulletRenderer : BaseSystem(), SubRenderer {
     @Wire lateinit var keybinds: KeyBindings
     @Wire lateinit var modelRenderer: ModelRenderer
+    @Wire lateinit var physics: Physics
 
     lateinit var debugDrawer: DebugDrawer
     var render = false
@@ -22,7 +25,7 @@ class DebugBulletRenderer : BaseSystem(), SubRenderer {
         keybinds.register(this, Input.Keys.F3, {toggle()}, {false})
         debugDrawer = DebugDrawer()
         debugDrawer.debugMode = btIDebugDraw.DebugDrawModes.DBG_DrawWireframe
-        modelRenderer.dynamicsWorld.debugDrawer = debugDrawer
+        physics.btWorld.debugDrawer = debugDrawer
         isEnabled = false
     }
 
@@ -36,7 +39,7 @@ class DebugBulletRenderer : BaseSystem(), SubRenderer {
         if (!render) return
         modelRenderer.modelBatch.begin(modelRenderer.currentCamera)
         debugDrawer.begin(modelRenderer.modelBatch.camera)
-        modelRenderer.dynamicsWorld.debugDrawWorld()
+        physics.btWorld.debugDrawWorld()
         debugDrawer.end()
         modelRenderer.modelBatch.end()
     }

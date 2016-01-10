@@ -1,6 +1,7 @@
 package io.piotrjastrzebski.lis.game.components
 
 import com.artemis.PooledComponent
+import com.badlogic.gdx.math.Matrix4
 import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.math.Vector2
 
@@ -9,6 +10,7 @@ import com.badlogic.gdx.math.Vector2
  */
 
 class Transform() : PooledComponent() {
+    var transform = Matrix4()
     var xy = Vector2()
     var angle = 0f
     var scale = Vector2()
@@ -35,6 +37,7 @@ class Transform() : PooledComponent() {
     }
 
     override fun reset() {
+        transform.idt()
         xy.setZero()
         angle = 0f
         bounds.x = 0f

@@ -1,29 +1,30 @@
 package io.piotrjastrzebski.lis.game.processors.physics
 
-import com.artemis.Aspect
-import com.artemis.BaseEntitySystem
-import com.artemis.utils.IntBag
-import com.badlogic.gdx.math.Vector3
-import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody
+import com.artemis.*
+import com.artemis.annotations.Wire
+import io.piotrjastrzebski.lis.game.components.physics.BulletBody
 import io.piotrjastrzebski.lis.game.components.Transform
-import io.piotrjastrzebski.lis.game.components.physics.BodyDef
-import kotlin.collections.mapOf
+import io.piotrjastrzebski.lis.game.components.physics.BulletBodyDef
 
 /**
- * Created by EvilEntity on 06/01/2016.
+ * Created by PiotrJ on 25/12/15.
  */
-class BulletBodyInit : BaseEntitySystem(Aspect.all(BodyDef::class.java, Transform::class.java)){
-    private val localInertia = Vector3()
+class BulletBodyInit : BaseEntitySystem(Aspect.all(BulletBodyDef::class.java, Transform::class.java)) {
+    @Wire lateinit var physics: Physics
+    @Wire lateinit var mTransform: ComponentMapper<Transform>
+    @Wire lateinit var mBulletBody: ComponentMapper<BulletBody>
+    @Wire lateinit var mBulletBodyDef: ComponentMapper<BulletBodyDef>
+
 
     override fun initialize() {
         isEnabled = false
     }
 
-    override fun inserted(entities: IntBag?) {
+    override fun inserted(e: Int) {
 
     }
 
-    override fun removed(entities: IntBag?) {
+    override fun removed(e: Int) {
 
     }
 
