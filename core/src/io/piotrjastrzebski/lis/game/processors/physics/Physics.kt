@@ -29,19 +29,29 @@ class Physics : BaseEntitySystem(Aspect.all(BulletBodyDef::class.java, Transform
 
     val collisionConfig: btCollisionConfiguration;
     val dispatcher: btDispatcher
-    val broadPhase: btDbvtBroadphase
-    val constraintSolver: btSequentialImpulseConstraintSolver
+//    val broadPhase: btDbvtBroadphase
+//    val constraintSolver: btSequentialImpulseConstraintSolver
     val btWorld: btDiscreteDynamicsWorld
-    private val contactListener: BulletContactListener
+//    private val contactListener: BulletContactListener
+
+    private var ghostPairCallback: btGhostPairCallback
 
     init {
-        collisionConfig = btDefaultCollisionConfiguration()
-        dispatcher = btCollisionDispatcher(collisionConfig)
-        broadPhase = btDbvtBroadphase()
-        constraintSolver = btSequentialImpulseConstraintSolver()
-        btWorld = btDiscreteDynamicsWorld(dispatcher, broadPhase, constraintSolver, collisionConfig)
-        btWorld.gravity = Vector3(0f, 0f, -3f)
-        contactListener = BulletContactListener()
+//        collisionConfig = btDefaultCollisionConfiguration()
+//        dispatcher = btCollisionDispatcher(collisionConfig)
+//        broadPhase = btDbvtBroadphase()
+//        constraintSolver = btSequentialImpulseConstraintSolver()
+//        btWorld = btDiscreteDynamicsWorld(dispatcher, broadPhase, constraintSolver, collisionConfig)
+//        btWorld.gravity = Vector3(0f, 0f, -3f)
+//        contactListener = BulletContactListener()
+
+        collisionConfig = btDefaultCollisionConfiguration();
+        dispatcher = btCollisionDispatcher(collisionConfig);
+        val sweep = btAxisSweep3(Vector3(-1000f, -1000f, -1000f), Vector3(1000f, 1000f, 1000f));
+        val solver = btSequentialImpulseConstraintSolver();
+        btWorld = btDiscreteDynamicsWorld(dispatcher, sweep, solver, collisionConfig);
+        ghostPairCallback = btGhostPairCallback();
+        sweep.getOverlappingPairCache().setInternalGhostPairCallback(ghostPairCallback);
     }
 
     val tmpLocalInertia = Vector3()
@@ -61,9 +71,9 @@ class Physics : BaseEntitySystem(Aspect.all(BulletBodyDef::class.java, Transform
         val body = btRigidBody(info.constructionInfo)
         body.motionState = ms
         body.proceedToTransform(trans.transform)
-        body.contactCallbackFlag = def.contactCallbackFlag
-        body.contactCallbackFilter = def.contactCallbackFilter
-        body.userData = def.userValue
+//        body.contactCallbackFlag = def.contactCallbackFlag
+//        body.contactCallbackFilter = def.contactCallbackFilter
+//        body.userData = def.userValue
         addRigidBody(body)
 
         bodyComp.body = body
@@ -141,8 +151,8 @@ class Physics : BaseEntitySystem(Aspect.all(BulletBodyDef::class.java, Transform
         }
         infoMap.clear()
         btWorld.dispose()
-        constraintSolver.dispose()
-        broadPhase.dispose()
+//        constraintSolver.dispose()
+//        broadPhase.dispose()
         dispatcher.dispose()
         collisionConfig.dispose()
     }
