@@ -35,9 +35,20 @@ class Physics : BaseSystem() {
         btWorld.addRigidBody(body)
     }
 
+    public fun removeRigidBody(body: btRigidBody) {
+        btWorld.removeRigidBody(body)
+    }
+
+    public fun removeCollisionObject(body: btCollisionObject) {
+        btWorld.removeCollisionObject(body)
+    }
+
+    private val maxSubSteps = 5
+    private val fixedTimeStep = 1f / 60f
+
     override fun processSystem() {
         val dt = Math.min(1f / 30f, world.delta);
-        btWorld.stepSimulation(dt, 5, 1f/60f)
+        btWorld.stepSimulation(dt, maxSubSteps, fixedTimeStep)
 
     }
 

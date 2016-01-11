@@ -5,10 +5,12 @@ import com.badlogic.gdx.assets.AssetManager
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g3d.Model
+import com.badlogic.gdx.graphics.g3d.ModelInstance
 import com.badlogic.gdx.graphics.glutils.ShaderProgram
 import com.badlogic.gdx.maps.tiled.TiledMap
 import com.badlogic.gdx.maps.tiled.TmxMapLoader
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
+import com.badlogic.gdx.utils.ObjectMap
 import com.kotcrab.vis.ui.VisUI
 
 /**
@@ -24,6 +26,7 @@ class Assets(val pixelScaleFactor: Float) {
     private val MAP_PATH = "staggered.tmx"
     private val RADIAL_SHADER_PATH = "shaders/radial"
     private val assetManager: AssetManager
+    private val nameToModel = ObjectMap<String, Model>()
 
     init {
         assetManager = AssetManager()
@@ -59,6 +62,9 @@ class Assets(val pixelScaleFactor: Float) {
         radialShader = assetManager.get(RADIAL_SHADER_PATH, ShaderProgram::class.java)
         tilesModel = assetManager.get(MODEL_TILES, Model::class.java)
 
+        // TODO do this properly
+        nameToModel.put("tiles", tilesModel)
+
         val textures = com.badlogic.gdx.utils.Array<Texture>()
         assetManager.getAll(Texture::class.java, textures)
         for (texture in textures) {
@@ -68,6 +74,11 @@ class Assets(val pixelScaleFactor: Float) {
             Gdx.gl.glTexParameterf(GL20.GL_TEXTURE_2D, GL20.GL_TEXTURE_MAX_ANISOTROPY_EXT, 16f)
         }
 
+    };
+
+    public fun getModelInstance(path:String, nodeId: String): ModelInstance? {
+        val model = nameToModel.get(path, null)?: return null
+        return ModelInstance(model, nodeId)
     }
 
     fun dispose() {

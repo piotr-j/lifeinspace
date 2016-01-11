@@ -1,16 +1,20 @@
 package io.piotrjastrzebski.lis.game.processors
 
 import com.artemis.BaseSystem
+import com.artemis.EntityEdit
 import com.artemis.annotations.Wire
 import com.badlogic.gdx.graphics.g3d.ModelInstance
 import com.badlogic.gdx.maps.tiled.TiledMapTile
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer
 import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.utils.IntMap
+import io.piotrjastrzebski.lis.game.components.ModelDef
 import io.piotrjastrzebski.lis.game.components.RenderableModel
+import io.piotrjastrzebski.lis.game.components.Transform
 import io.piotrjastrzebski.lis.game.components.physics.BulletBodyDef
 import io.piotrjastrzebski.lis.game.createAndEdit
 import io.piotrjastrzebski.lis.utils.Assets
+import io.piotrjastrzebski.lis.game.create
 
 /**
  * Created by PiotrJ on 22/12/15.
@@ -70,8 +74,16 @@ class MapParser() : BaseSystem() {
                     val bulletDef = edit.create(BulletBodyDef::class.java)
                     bulletDef.type = BulletBodyDef.Shape.MESH
                     */
+                    val edit = world.createAndEdit()
+                    val trans = edit.create<Transform>()
                     v3.set(x*TILE_SIZE + offsetX, y*TILE_SIZE/2, zOffset)
-                    modelRenderer.createTile(tileData.nodeId, v3, tileData.dir - 45)
+                    trans.transform.setToTranslation(v3)
+                    trans.transform.rotate(Vector3.Z, tileData.dir - 45)
+
+                    val def = edit.create<ModelDef>()
+                    def.model = "tiles"
+                    def.nodeId = tileData.nodeId
+//                    modelRenderer.createTile(tileData.nodeId, v3, tileData.dir - 45)
                 }
             }
             zOffset += TILE_HEIGHT

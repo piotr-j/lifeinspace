@@ -24,7 +24,9 @@ import com.badlogic.gdx.utils.Array
 import com.badlogic.gdx.utils.ArrayMap
 import com.badlogic.gdx.utils.Disposable
 import io.piotrjastrzebski.lis.game.components.Culled
+import io.piotrjastrzebski.lis.game.components.ModelDef
 import io.piotrjastrzebski.lis.game.components.RenderableModel
+import io.piotrjastrzebski.lis.game.components.Transform
 import io.piotrjastrzebski.lis.game.processors.physics.BulletContactListener
 import io.piotrjastrzebski.lis.game.processors.physics.BulletMotionState
 import io.piotrjastrzebski.lis.screens.WIRE_GAME_CAM
@@ -34,8 +36,10 @@ import io.piotrjastrzebski.lis.utils.Resizing
 /**
  * Created by PiotrJ on 22/12/15.
  */
-class ModelInit() : BaseEntitySystem(Aspect.all(RenderableModel::class.java)) {
+class ModelInit() : BaseEntitySystem(Aspect.all(ModelDef::class.java, Transform::class.java)) {
     @Wire lateinit var mRenderableModel: ComponentMapper<RenderableModel>
+    @Wire lateinit var mModelDef: ComponentMapper<ModelDef>
+    @Wire lateinit var mTransform: ComponentMapper<Transform>
     @Wire lateinit var assets: Assets
 
 
@@ -43,7 +47,17 @@ class ModelInit() : BaseEntitySystem(Aspect.all(RenderableModel::class.java)) {
     }
 
     override fun inserted(entityId: Int) {
-
+        val trans = mTransform.get(entityId)
+        val def = mModelDef.get(entityId)
+        val inst: ModelInstance? = assets.getModelInstance(def.model, def.nodeId)
+        if (inst == null) {
+            Gdx.app.log("", "Model ${def.model} not found!")
+            return
+        }
+        val model = mRenderableModel.create(entityId)
+        inst.transform.set(trans.transform)
+        inst.calculateTransforms()
+        model.instance = inst
     }
 
     override fun removed(entityId: Int) {
