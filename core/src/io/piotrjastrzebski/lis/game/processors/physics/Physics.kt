@@ -2,27 +2,20 @@ package io.piotrjastrzebski.lis.game.processors.physics
 
 import com.artemis.Aspect
 import com.artemis.BaseEntitySystem
-import com.artemis.BaseSystem
 import com.artemis.ComponentMapper
 import com.artemis.annotations.Wire
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.graphics.g3d.Model
 import com.badlogic.gdx.graphics.g3d.model.MeshPart
-import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.math.Vector3
-import com.badlogic.gdx.physics.box2d.World
 import com.badlogic.gdx.physics.bullet.collision.*
 import com.badlogic.gdx.physics.bullet.dynamics.btDiscreteDynamicsWorld
 import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody
 import com.badlogic.gdx.physics.bullet.dynamics.btSequentialImpulseConstraintSolver
 import com.badlogic.gdx.utils.Array
 import com.badlogic.gdx.utils.ObjectMap
-import com.badlogic.gdx.utils.ObjectSet
-import io.piotrjastrzebski.lis.game.components.ModelDef
 import io.piotrjastrzebski.lis.game.components.Transform
 import io.piotrjastrzebski.lis.game.components.physics.BulletBody
 import io.piotrjastrzebski.lis.game.components.physics.BulletBodyDef
-import io.piotrjastrzebski.lis.game.processors.ModelRenderer
 import io.piotrjastrzebski.lis.utils.Assets
 
 /**
@@ -136,12 +129,17 @@ class Physics : BaseEntitySystem(Aspect.all(BulletBodyDef::class.java, Transform
     }
 
     override fun dispose() {
+        val entities = subscription.entities
+        for (id in 0..entities.size() -1) {
+            val body = mBulletBody.getSafe(entities.get(id))?: continue
+            // if we have a component, the body will be set
+            removeRigidBody(body.body!!)
+        }
         for (value in infoMap.values()) {
             value.constructionInfo.dispose()
             value.shape.dispose()
         }
         infoMap.clear()
-        // TODO nuke the bodies
         btWorld.dispose()
         constraintSolver.dispose()
         broadPhase.dispose()
