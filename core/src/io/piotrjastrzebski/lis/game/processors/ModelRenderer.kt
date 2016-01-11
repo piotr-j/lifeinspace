@@ -113,9 +113,6 @@ class ModelRenderer() : IteratingSystem(Aspect.all(RenderableModel::class.java).
 
     private lateinit var ground: GameObject
 
-    init {
-    }
-
     fun spawn() {
         val obj = constructors.values[1].construct()
         obj.transform.setFromEulerAngles(MathUtils.random(360f), MathUtils.random(360f), MathUtils.random(360f))

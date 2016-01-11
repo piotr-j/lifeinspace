@@ -81,6 +81,8 @@ class Assets(val pixelScaleFactor: Float) {
         return ModelInstance(model, nodeId)
     }
 
+    public fun getModel(path:String) = nameToModel.get(path, null)
+
     fun dispose() {
         assetManager.dispose()
         VisUI.dispose()

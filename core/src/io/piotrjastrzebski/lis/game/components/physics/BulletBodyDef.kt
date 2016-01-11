@@ -15,8 +15,18 @@ class BulletBodyDef() : PooledComponent() {
     var type = Shape.BOX
 
     public var mass = 0f
+    // collision model and node
+    public lateinit var model:String
+    public lateinit var nodeId:String
+
+    public var userValue = 0
+    public var contactCallbackFlag = 1
+    public var contactCallbackFilter = 0
 
     override fun reset() {
         mass = 0f
+        userValue = 0
+        contactCallbackFlag = 1
+        contactCallbackFilter = 0
     }
 }

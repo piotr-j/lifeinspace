@@ -1,15 +1,12 @@
 package io.piotrjastrzebski.lis.game.processors
 
 import com.artemis.BaseSystem
-import com.artemis.EntityEdit
 import com.artemis.annotations.Wire
-import com.badlogic.gdx.graphics.g3d.ModelInstance
 import com.badlogic.gdx.maps.tiled.TiledMapTile
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer
 import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.utils.IntMap
 import io.piotrjastrzebski.lis.game.components.ModelDef
-import io.piotrjastrzebski.lis.game.components.RenderableModel
 import io.piotrjastrzebski.lis.game.components.Transform
 import io.piotrjastrzebski.lis.game.components.physics.BulletBodyDef
 import io.piotrjastrzebski.lis.game.createAndEdit
@@ -23,7 +20,6 @@ val TILE_HEIGHT = .25f
 /** tiles are 1x1, but rotated 45 deg */
 val TILE_SIZE = Math.sqrt(2.0).toFloat()
 class MapParser() : BaseSystem() {
-    @Wire lateinit var modelRenderer: ModelRenderer
     @Wire lateinit var assets: Assets
 
     val tileIdToTileData = IntMap<TileData>()
@@ -53,27 +49,7 @@ class MapParser() : BaseSystem() {
                     val tile: TiledMapTile = layer.getCell(x, y)?.tile ?: continue
                     if (!tileIdToTileData.containsKey(tile.id)) continue
                     val tileData = tileIdToTileData.get(tile.id)
-                    // TODO is this model stuff correct?
-                    /*
-                    val instance = ModelInstance(tiles, tileData.nodeId)
-                    if (instance.nodes.size == 0) continue
-                    // face the camera
-//                    instance.transform.rotate(Vector3.X, 90f)
-                    // rotate left so its on the corner+
-                    instance.transform.rotate(Vector3.Z, tileData.dir - 45)
-                    // tiles are spaced at size in the x, but size/2 on the y, so they overlap
-                    instance.transform.setTranslation(x*TILE_SIZE + offsetX, y*TILE_SIZE/2, zOffset)
-                    instance.calculateTransforms()
-                    // TODO add some other tile data
-                    // lets play with bullet in here, then extract it
-                    // get col shape from models, col-full, etc
-                    // col-corner-in-a, b for inner corner
-                    val edit = world.createAndEdit()
-                    edit.create(RenderableModel::class.java).instance = instance
-                    val colData = tiles.getNode("${tileData.nodeId}-col") ?: continue
-                    val bulletDef = edit.create(BulletBodyDef::class.java)
-                    bulletDef.type = BulletBodyDef.Shape.MESH
-                    */
+
                     val edit = world.createAndEdit()
                     val trans = edit.create<Transform>()
                     v3.set(x*TILE_SIZE + offsetX, y*TILE_SIZE/2, zOffset)
@@ -83,8 +59,15 @@ class MapParser() : BaseSystem() {
                     val def = edit.create<ModelDef>()
                     def.model = "tiles"
                     def.nodeId = tileData.nodeId
+
+                    val bulletDef = edit.create<BulletBodyDef>()
+                    bulletDef.mass = 0f
+                    bulletDef.model = "tiles"
+                    bulletDef.nodeId = tileData.nodeId //+"-col"
+
 //                    modelRenderer.createTile(tileData.nodeId, v3, tileData.dir - 45)
                 }
+//                return
             }
             zOffset += TILE_HEIGHT
         }

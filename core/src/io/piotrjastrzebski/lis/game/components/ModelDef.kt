@@ -10,6 +10,5 @@ class ModelDef : PooledComponent() {
     public lateinit var nodeId: String
 
     override fun reset() {
-
     }
 }

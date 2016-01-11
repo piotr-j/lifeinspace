@@ -1,6 +1,13 @@
 package io.piotrjastrzebski.lis.game.processors.physics
 
+import com.artemis.Aspect
+import com.artemis.BaseEntitySystem
 import com.artemis.BaseSystem
+import com.artemis.ComponentMapper
+import com.artemis.annotations.Wire
+import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.graphics.g3d.Model
+import com.badlogic.gdx.graphics.g3d.model.MeshPart
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.physics.box2d.World
@@ -8,12 +15,25 @@ import com.badlogic.gdx.physics.bullet.collision.*
 import com.badlogic.gdx.physics.bullet.dynamics.btDiscreteDynamicsWorld
 import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody
 import com.badlogic.gdx.physics.bullet.dynamics.btSequentialImpulseConstraintSolver
+import com.badlogic.gdx.utils.Array
+import com.badlogic.gdx.utils.ObjectMap
 import com.badlogic.gdx.utils.ObjectSet
+import io.piotrjastrzebski.lis.game.components.ModelDef
+import io.piotrjastrzebski.lis.game.components.Transform
+import io.piotrjastrzebski.lis.game.components.physics.BulletBody
+import io.piotrjastrzebski.lis.game.components.physics.BulletBodyDef
+import io.piotrjastrzebski.lis.game.processors.ModelRenderer
+import io.piotrjastrzebski.lis.utils.Assets
 
 /**
  * Created by PiotrJ on 25/12/15.
  */
-class Physics : BaseSystem() {
+class Physics : BaseEntitySystem(Aspect.all(BulletBodyDef::class.java, Transform::class.java)) {
+    @Wire lateinit var mTransform: ComponentMapper<Transform>
+    @Wire lateinit var mBulletBody: ComponentMapper<BulletBody>
+    @Wire lateinit var mBulletBodyDef: ComponentMapper<BulletBodyDef>
+    @Wire lateinit var assets: Assets
+
     val collisionConfig: btCollisionConfiguration;
     val dispatcher: btDispatcher
     val broadPhase: btDbvtBroadphase
@@ -29,6 +49,69 @@ class Physics : BaseSystem() {
         btWorld = btDiscreteDynamicsWorld(dispatcher, broadPhase, constraintSolver, collisionConfig)
         btWorld.gravity = Vector3(0f, 0f, -3f)
         contactListener = BulletContactListener()
+    }
+
+    val tmpLocalInertia = Vector3()
+    val tmpMeshParts = Array<MeshPart>()
+    override fun inserted(entityId: Int) {
+        val trans = mTransform.get(entityId)
+        val def = mBulletBodyDef.get(entityId)
+
+        val info = getInfo(def.model, def.nodeId, def.mass)
+        if (info == null) {
+            Gdx.app.error("", "No info! ${def.model} ${def.nodeId}")
+            return
+        }
+        val bodyComp = mBulletBody.create(entityId)
+        val ms = BulletMotionState()
+        ms.transform = trans.transform
+        val body = btRigidBody(info.constructionInfo)
+        body.motionState = ms
+        body.proceedToTransform(trans.transform)
+        body.contactCallbackFlag = def.contactCallbackFlag
+        body.contactCallbackFilter = def.contactCallbackFilter
+        body.userData = def.userValue
+        addRigidBody(body)
+
+        bodyComp.body = body
+        bodyComp.ms = ms
+
+    }
+
+    private val tmpKey = InfoKey("", "", 0f)
+    private val infoMap = ObjectMap<InfoKey, InfoData>()
+    private fun getInfo(model: String, nodeId: String, mass: Float): InfoData? {
+        tmpKey.model = model
+        tmpKey.nodeId = nodeId
+        tmpKey.mass = mass
+        var infoData = infoMap.get(tmpKey, null)
+        if (infoData == null) {
+            Gdx.app.log("", "Create info for $model, $nodeId, $mass")
+            val modelData = assets.getModel(model)?: return null
+            tmpMeshParts.clear()
+            // note this is probably suboptimal
+            tmpMeshParts.add(modelData.getNode(nodeId).parts.first().meshPart)
+            // could use a shape def, not everything needs to be a mesh
+            // most of the tiles could be boxes
+            val shape = btBvhTriangleMeshShape(tmpMeshParts)
+            tmpLocalInertia.setZero()
+            if (mass > 0f) shape.calculateLocalInertia(mass, tmpLocalInertia)
+            val cInfo = btRigidBody.btRigidBodyConstructionInfo(mass, null, shape, tmpLocalInertia)
+            val key = InfoKey(tmpKey.model, tmpKey.nodeId, tmpKey.mass)
+            infoData = InfoData(shape, cInfo)
+            infoMap.put(key, infoData)
+        }
+        return infoData
+    }
+
+    private data class InfoData(val shape:btCollisionShape, val constructionInfo: btRigidBody.btRigidBodyConstructionInfo)
+
+    private data class InfoKey(var model: String, var nodeId: String, var mass: Float)
+
+    override fun removed(entityId: Int) {
+        val body = mBulletBody.get(entityId)
+        body.body?.dispose()
+        body.ms?.dispose()
     }
 
     public fun addRigidBody(body: btRigidBody) {
@@ -53,6 +136,11 @@ class Physics : BaseSystem() {
     }
 
     override fun dispose() {
+        for (value in infoMap.values()) {
+            value.constructionInfo.dispose()
+            value.shape.dispose()
+        }
+        infoMap.clear()
         // TODO nuke the bodies
         btWorld.dispose()
         constraintSolver.dispose()
